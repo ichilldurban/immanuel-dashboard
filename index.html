@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ME-408 Immanuel Church — Financial Status Dashboard v2</title>
+<title>Immanuel Church — Seatides Project</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
 <!-- Tender packs are pre-built ZIP files in Tender Packs/ folder -->
 <style>
@@ -281,13 +281,16 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
 </head>
 <body>
 <div class="header">
-  <div class="header-left">
-    <h1>ME-408 Immanuel Church Seatides — Financial Status</h1>
-    <div class="sub">Latest Priced BOQ &bull; DF Strang Buildings &bull; Metric Edge Cost & Construction Consultants</div>
+  <div class="header-left" style="display:flex;align-items:center;gap:14px">
+    <img src="assets/immanuel-logo.png" alt="Immanuel Church" style="height:38px;border-radius:4px" onerror="this.style.display='none'">
+    <div>
+      <h1>Immanuel Church — Seatides Project</h1>
+      <div class="sub">Proposed Renovations &bull; Project Dashboard</div>
+    </div>
   </div>
-  <div class="header-right">
-    <div class="header-date">24 March 2026</div>
-    <div class="header-logo">METRIC EDGE</div>
+  <div class="header-right" style="display:flex;align-items:center;gap:14px">
+    <div class="header-date">2026</div>
+    <img src="assets/strang-logo.png" alt="DF Strang Buildings" style="height:32px" onerror="this.style.display='none'">
   </div>
 </div>
 
@@ -464,7 +467,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
 <!-- ===================== TAB 3: REVISED VS ORIGINAL ===================== -->
 <div class="panel" id="panel-revised">
   <div class="mg" style="grid-template-columns:repeat(4,1fr)">
-    <div class="m indigo"><div class="m-label">Original Total (ex VAT)</div><div class="m-value">R 4,043,577</div><div class="m-sub">DF Strang — Original Submission</div></div>
+    <div class="m indigo"><div class="m-label">Original Total (ex VAT)</div><div class="m-value">R 4,043,577</div><div class="m-sub">Original Submission</div></div>
     <div class="m green"><div class="m-label">Revised Total (ex VAT)</div><div class="m-value" id="revisedTotalCard" style="color:var(--green)">R 3,779,115</div><div class="m-sub">Revised 24 Mar 2026</div></div>
     <div class="m gold"><div class="m-label">Total Saving (ex VAT)</div><div class="m-value" id="totalSavingCard" style="color:var(--gold)">R 264,463</div><div class="m-sub">40 items repriced</div></div>
     <div class="m purple"><div class="m-label">% Reduction</div><div class="m-value" id="pctReductionCard" style="color:var(--green)">6.5%</div><div class="m-sub">On total ex VAT</div></div>
@@ -757,12 +760,12 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
   <div class="card">
     <div class="card-h"><h2>Original Tender Submission</h2><span class="badge b-gold">18 February 2026</span></div>
     <div class="card-b">
-      <p style="font-size:0.78rem;color:var(--text2);margin-bottom:18px;line-height:1.6">The documents below were submitted to Immanuel Church as the formal tender by DF Strang Buildings, prepared by Metric Edge Cost &amp; Construction Consultants. Click to download and review.</p>
+      <p style="font-size:0.78rem;color:var(--text2);margin-bottom:18px;line-height:1.6">The documents below were submitted as the formal tender for the proposed renovations. Click to download and review.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
         <div style="background:var(--elevated);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center">
           <div style="font-size:2rem;margin-bottom:8px;opacity:0.5">&#128196;</div>
           <div style="font-weight:600;font-size:0.82rem;margin-bottom:4px">Cover Letter &amp; Report</div>
-          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:12px">ME-408 Immanuel Church Seatides — Project Overview, Scope &amp; Conditions</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:12px">Project Overview, Scope &amp; Conditions</div>
           <a href="submission/ME-408_Cover_Letter.docx" download class="btn btn-download btn-sm" style="text-decoration:none">Download (.docx)</a>
         </div>
         <div style="background:var(--elevated);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center">
@@ -1007,7 +1010,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
 
 </div>
 
-<footer>ME-408 Immanuel Church Seatides &bull; Financial Status Dashboard v2 &bull; Metric Edge Cost & Construction Consultants &bull; 24 March 2026</footer>
+<footer>Immanuel Church — Seatides Project &bull; Project Dashboard &bull; 2026</footer>
 
 <script>
 const bills=[
