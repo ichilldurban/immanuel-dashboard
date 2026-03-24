@@ -124,8 +124,129 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
 .summary-table .spacer td{padding:4px;border:none;background:transparent}
 /* Info box */
 .info-box{padding:14px 18px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);border-radius:var(--rs);font-size:0.74rem;color:var(--text2);margin-top:14px}
-@media(max-width:900px){.chart-grid{grid-template-columns:1fr}.mg{grid-template-columns:repeat(2,1fr)}.pkg-body{grid-template-columns:1fr}}
-@media(max-width:600px){.mg{grid-template-columns:1fr}}
+/* ============ TABLET ============ */
+@media(max-width:900px){
+  .chart-grid{grid-template-columns:1fr}
+  .mg{grid-template-columns:repeat(2,1fr)}
+  .pkg-body{grid-template-columns:1fr}
+  .header{padding:12px 16px}
+  .content{padding:14px}
+}
+
+/* ============ MOBILE ============ */
+@media(max-width:600px){
+  /* Header */
+  .header{padding:10px 14px;flex-direction:column;align-items:flex-start;gap:6px}
+  .header-left h1{font-size:0.85rem}
+  .header-left .sub{font-size:0.6rem}
+  .header-right{width:100%;justify-content:space-between}
+  .header-logo{font-size:0.5rem;letter-spacing:3px;padding:3px 8px}
+
+  /* Tabs — scrollable strip */
+  .tabs{padding:0 8px;top:auto;position:relative;-webkit-overflow-scrolling:touch}
+  .tab{padding:10px 12px;font-size:0.65rem}
+  .tab .cnt{font-size:0.52rem;min-width:14px;height:14px;margin-left:3px}
+
+  /* Content area */
+  .content{padding:10px}
+
+  /* Metric cards */
+  .mg{grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+  .m{padding:12px 14px}
+  .m-value{font-size:1.1rem}
+  .m-label{font-size:0.52rem}
+  .m-sub{font-size:0.58rem}
+
+  /* Cards */
+  .card{margin-bottom:10px;border-radius:8px}
+  .card-h{padding:10px 14px;flex-wrap:wrap;gap:6px}
+  .card-h h2{font-size:0.72rem}
+  .card-b{padding:12px}
+
+  /* Tables — horizontal scroll */
+  .card-b[style*="overflow-x"]{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{font-size:0.66rem;min-width:500px}
+  th{padding:7px 8px;font-size:0.56rem}
+  td{padding:6px 8px}
+  .summary-table{min-width:420px;font-size:0.68rem}
+  .summary-table th{padding:8px 10px;font-size:0.58rem}
+  .summary-table td{padding:7px 10px}
+  .summary-table .grand-total td{font-size:0.74rem}
+
+  /* Make all table containers scrollable */
+  .card-b:has(table){overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0}
+  .card-b:has(table) table{margin:0}
+
+  /* Risk bar */
+  .risk-bar{padding:10px 12px;gap:10px;flex-wrap:wrap}
+  .risk-icon{font-size:1rem}
+  .risk-text h4{font-size:0.7rem}
+  .risk-text p{font-size:0.62rem}
+
+  /* Charts */
+  .chart-grid{grid-template-columns:1fr;gap:10px}
+  .chart-card{padding:12px}
+  .chart-card h3{font-size:0.66rem}
+  .chart-wrap{height:220px}
+
+  /* Buttons */
+  .btn{padding:7px 12px;font-size:0.66rem}
+  .btn-sm{padding:5px 9px;font-size:0.62rem}
+
+  /* Filter bar */
+  .filter-bar{flex-direction:column;align-items:stretch}
+  .filter-bar select,.filter-bar input{width:100%;max-width:none;font-size:0.72rem}
+
+  /* Package cards */
+  .pkg-top{padding:14px;gap:8px}
+  .pkg-top h3{font-size:0.8rem}
+  .pkg-amount{font-size:1rem}
+  .pkg-body{padding:0 14px 14px;grid-template-columns:1fr}
+  .pkg-footer{padding:10px 14px;flex-direction:column;align-items:stretch}
+  .pkg-footer .btn{width:100%;justify-content:center}
+  .drawing-pills{gap:3px}
+  .drawing-pill{font-size:0.56rem;padding:2px 6px}
+
+  /* Upload zone */
+  .upload-zone{padding:24px 16px}
+  .upload-zone .icon{font-size:1.5rem;margin-bottom:6px}
+  .upload-zone .upload-title{font-size:0.74rem}
+  .upload-zone .upload-sub{font-size:0.64rem}
+
+  /* Subcontractor quote buttons — stack vertically */
+  td:last-child .btn{display:block;width:100%;text-align:center;margin-bottom:4px}
+  td:last-child label.btn{display:block}
+
+  /* Submission cards grid */
+  [style*="grid-template-columns:repeat(auto-fit,minmax(280px"]{grid-template-columns:1fr!important}
+
+  /* Bill headers */
+  .bill-header td{font-size:0.7rem;padding:8px}
+  .bill-total td{font-size:0.66rem}
+  .boq-heading td{font-size:0.64rem;padding:5px 8px 5px 16px}
+  .boq-item td{font-size:0.64rem;padding:4px 8px}
+
+  /* Info box */
+  .info-box{font-size:0.68rem;padding:10px 14px}
+
+  /* Footer */
+  footer{font-size:0.54rem;padding:14px 10px}
+
+  /* Revised panel metric cards */
+  .panel .mg[style*="repeat(4"]{grid-template-columns:repeat(2,1fr)!important}
+}
+
+/* ============ SMALL MOBILE (< 380px) ============ */
+@media(max-width:380px){
+  .header-left h1{font-size:0.75rem}
+  .tab{padding:8px 10px;font-size:0.6rem}
+  .m-value{font-size:0.95rem}
+  .summary-table{min-width:360px;font-size:0.62rem}
+  .summary-table td{padding:6px 8px}
+  table{min-width:440px;font-size:0.6rem}
+  .panel .mg[style*="repeat(4"]{grid-template-columns:1fr!important}
+}
+
 @media print{body{background:#fff;color:#000}.header,.tabs{position:static}.card{break-inside:avoid;border:1px solid #ddd}.panel{display:block!important}td,th{color:#333;border-color:#ddd}}
 </style>
 </head>
@@ -160,7 +281,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
 
   <div class="card">
     <div class="card-h"><h2>Project Financial Summary</h2><span class="badge b-gold">Revised 24 Mar 2026</span></div>
-    <div class="card-b" style="padding:0">
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch">
       <table class="summary-table">
         <thead>
           <tr><th style="padding-left:18px;min-width:260px">Description</th><th class="r" style="min-width:130px">Original</th><th class="r" style="min-width:130px">Revised</th><th class="r" style="min-width:120px">Variance</th></tr>
@@ -341,7 +462,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
   <!-- Section A: Current Subcontractor Pricing -->
   <div class="card">
     <div class="card-h"><h2>Section A: Current Subcontractor Pricing</h2><span class="badge b-gold">Prices under review — not yet confirmed</span></div>
-    <div class="card-b" style="padding:0"><table>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
       <thead><tr><th>Package</th><th>Description</th><th>Supplier</th><th class="r">Amount (ex VAT)</th><th>Status</th><th style="width:200px;text-align:center">Quote</th></tr></thead>
       <tbody>
         <tr><td>SP-01</td><td>Timber Deck &amp; Staircase</td><td>Big Decks</td><td class="r">R 103,655</td><td><span class="badge b-green">Quoted</span></td><td style="text-align:center"><a href="quotes/SP-01_Big_Decks.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;margin-right:4px">View</a><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-01')">Upload New</label></td></tr>
@@ -361,7 +482,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
   <!-- Section B: Provisional Sums -->
   <div class="card">
     <div class="card-h"><h2>Section B: Provisional Sums (No Pricing Yet)</h2></div>
-    <div class="card-b" style="padding:0"><table>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
       <thead><tr><th>Bill 14</th><th>Description</th><th class="r">Provision (ex VAT)</th><th>Procurement Pack</th><th>Status</th></tr></thead>
       <tbody>
         <tr><td>PS-01</td><td>Ironmongery</td><td class="r">R 15,000</td><td>No</td><td><span class="badge b-purple">Provisional Sum</span></td></tr>
@@ -419,7 +540,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
   </div>
   <div class="card">
     <div class="card-h"><h2>Uploaded Documents Log</h2></div>
-    <div class="card-b" style="padding:0"><table>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
       <thead><tr><th>Date</th><th>Package</th><th>File</th><th>Status</th></tr></thead>
       <tbody id="uploadLog"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px">No documents uploaded yet</td></tr></tbody>
     </table></div>
@@ -431,7 +552,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
 
   <div class="card">
     <div class="card-h"><h2>Architectural Drawings</h2><span class="badge b-indigo">Narrative Architects — N2407</span></div>
-    <div class="card-b" style="padding:0"><table>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
       <thead><tr><th style="width:40px">#</th><th style="width:140px">Drawing</th><th>Description</th><th class="r" style="width:100px">Date</th><th style="width:100px;text-align:center">Download</th></tr></thead>
       <tbody>
         <tr><td>1</td><td style="font-weight:600;color:var(--indigo)">N2407_01</td><td>Lower Ground Storey</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/architect/N2407_IMMANUAL%20SEATIDES_01_LOWER%20GRND%20STOREY.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
@@ -447,7 +568,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
 
   <div class="card">
     <div class="card-h"><h2>Structural / Engineer Drawings</h2><span class="badge b-purple">Sutherland — 9721</span></div>
-    <div class="card-b" style="padding:0"><table>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
       <thead><tr><th style="width:40px">#</th><th style="width:140px">Drawing</th><th>Description</th><th class="r" style="width:100px">Date</th><th style="width:100px;text-align:center">Download</th></tr></thead>
       <tbody>
         <tr><td>1</td><td style="font-weight:600;color:var(--purple)">9721_S_DW001</td><td>Foundation Layout and Details</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/structural/9721_S_DW001%20-%20Foundation%20Layout%20and%20Details.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
