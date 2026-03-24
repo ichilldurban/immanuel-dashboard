@@ -286,6 +286,12 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
   <div class="tab" onclick="showTab('drawings',this)">Drawings</div>
   <div class="tab" onclick="showTab('submission',this)">Original Submission</div>
   <div class="tab" onclick="showTab('contract',this)">Contract</div>
+  <div class="tab" onclick="showTab('siteminutes',this)">Site Meetings</div>
+  <div class="tab" onclick="showTab('photos',this)">Photographs</div>
+  <div class="tab" onclick="showTab('variations',this)">Variations</div>
+  <div class="tab" onclick="showTab('programme',this)">Programme</div>
+  <div class="tab" onclick="showTab('costreports',this)">Cost Reports</div>
+  <div class="tab" onclick="showTab('valuations',this)">Valuations</div>
 </div>
 
 <div class="content">
@@ -668,6 +674,208 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ===================== TAB: SITE MEETINGS ===================== -->
+<div class="panel" id="panel-siteminutes">
+  <div class="card">
+    <div class="card-h"><h2>Site Meeting Minutes</h2><span class="badge b-indigo">Construction Phase</span></div>
+    <div class="card-b">
+      <p style="font-size:0.76rem;color:var(--text2);margin-bottom:16px">Upload and access site meeting minutes. Each entry is filed by meeting date and number.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Meeting Number</label>
+          <input type="text" id="meetingNo" placeholder="e.g. Site Meeting 01" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Meeting Date</label>
+          <input type="date" id="meetingDate" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+      </div>
+      <div class="upload-zone" onclick="this.querySelector('input[type=file]').click()">
+        <div class="icon">&#128203;</div>
+        <div class="upload-title">Upload Meeting Minutes</div>
+        <div class="upload-sub">PDF, DOCX — signed minutes</div>
+        <input type="file" style="display:none" accept=".pdf,.docx,.doc" onchange="handleDocUpload(this,'siteminutes')">
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2>Minutes Register</h2></div>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+      <thead><tr><th>No.</th><th>Date</th><th>Description</th><th>Status</th><th style="text-align:center">Download</th></tr></thead>
+      <tbody id="minutesLog"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">No site meeting minutes uploaded yet. Minutes will appear here once construction begins.</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===================== TAB: PHOTOGRAPHS ===================== -->
+<div class="panel" id="panel-photos">
+  <div class="card">
+    <div class="card-h"><h2>Site Photographs</h2><span class="badge b-green">Upload by Date</span></div>
+    <div class="card-b">
+      <p style="font-size:0.76rem;color:var(--text2);margin-bottom:16px">Upload site photographs grouped by date. All photos are filed chronologically for progress tracking.</p>
+      <div style="margin-bottom:16px">
+        <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Photo Date</label>
+        <input type="date" id="photoDate" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;max-width:300px;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Description (optional)</label>
+        <input type="text" id="photoDesc" placeholder="e.g. Foundation excavation, Roof installation" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+      </div>
+      <div class="upload-zone" onclick="this.querySelector('input[type=file]').click()">
+        <div class="icon">&#128247;</div>
+        <div class="upload-title">Upload Site Photos</div>
+        <div class="upload-sub">JPG, PNG — multiple files allowed</div>
+        <input type="file" style="display:none" accept="image/*" multiple onchange="handlePhotoUpload(this)">
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2>Photo Register</h2></div>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+      <thead><tr><th>Date</th><th>Description</th><th>Files</th><th>Status</th></tr></thead>
+      <tbody id="photoLog"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px">No site photographs uploaded yet. Photos will appear here once construction begins.</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===================== TAB: VARIATIONS ===================== -->
+<div class="panel" id="panel-variations">
+  <div class="card">
+    <div class="card-h"><h2>Contract Variations</h2><span class="badge b-orange">Variation Orders</span></div>
+    <div class="card-b">
+      <p style="font-size:0.76rem;color:var(--text2);margin-bottom:16px">All contract variations, instructions, and scope changes are recorded and tracked here. Each variation includes the instruction, cost impact, and approval status.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Variation No.</label>
+          <input type="text" id="varNo" placeholder="e.g. VO-001" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Date</label>
+          <input type="date" id="varDate" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Value (ex VAT)</label>
+          <input type="text" id="varValue" placeholder="e.g. R 15,000" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+      </div>
+      <div class="upload-zone" onclick="this.querySelector('input[type=file]').click()">
+        <div class="icon">&#128196;</div>
+        <div class="upload-title">Upload Variation Order / Instruction</div>
+        <div class="upload-sub">PDF, DOCX, XLSX</div>
+        <input type="file" style="display:none" accept=".pdf,.docx,.doc,.xlsx,.xls" onchange="handleDocUpload(this,'variations')">
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2>Variation Register</h2></div>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+      <thead><tr><th>VO No.</th><th>Date</th><th>Description</th><th class="r">Value (ex VAT)</th><th>Status</th><th style="text-align:center">Document</th></tr></thead>
+      <tbody id="variationLog"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">No variations issued yet. Variation orders will be recorded here during construction.</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===================== TAB: PROGRAMME ===================== -->
+<div class="panel" id="panel-programme">
+  <div class="card">
+    <div class="card-h"><h2>Construction Programme</h2><span class="badge b-cyan">Schedule</span></div>
+    <div class="card-b">
+      <p style="font-size:0.76rem;color:var(--text2);margin-bottom:16px">The construction programme / schedule will be uploaded here once agreed between the builder and professional team. Programme revisions will be tracked.</p>
+      <div style="margin-bottom:16px">
+        <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Programme Version</label>
+        <select id="progVersion" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;max-width:400px;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+          <option>Rev 0 — Original Programme</option>
+          <option>Rev 1 — Updated Programme</option>
+          <option>Rev 2 — Revised Programme</option>
+        </select>
+      </div>
+      <div class="upload-zone" onclick="this.querySelector('input[type=file]').click()">
+        <div class="icon">&#128197;</div>
+        <div class="upload-title">Upload Construction Programme</div>
+        <div class="upload-sub">PDF, XLSX, MPP</div>
+        <input type="file" style="display:none" accept=".pdf,.xlsx,.xls,.mpp" onchange="handleDocUpload(this,'programme')">
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2>Programme History</h2></div>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+      <thead><tr><th>Version</th><th>Date Uploaded</th><th>Description</th><th>Status</th><th style="text-align:center">Download</th></tr></thead>
+      <tbody id="programmeLog"><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:32px">No programme uploaded yet. The construction schedule will be uploaded once agreed with the builder.</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===================== TAB: COST REPORTS ===================== -->
+<div class="panel" id="panel-costreports">
+  <div class="card">
+    <div class="card-h"><h2>Cost Reports</h2><span class="badge b-gold">Metric Edge</span></div>
+    <div class="card-b">
+      <p style="font-size:0.76rem;color:var(--text2);margin-bottom:16px">Monthly cost reports prepared by Metric Edge tracking expenditure against budget, variations, and projected final account. Reports are issued with each payment valuation.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Report Number</label>
+          <input type="text" id="costReportNo" placeholder="e.g. Cost Report 01" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Report Date</label>
+          <input type="date" id="costReportDate" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+      </div>
+      <div class="upload-zone" onclick="this.querySelector('input[type=file]').click()">
+        <div class="icon">&#128200;</div>
+        <div class="upload-title">Upload Cost Report</div>
+        <div class="upload-sub">PDF, XLSX</div>
+        <input type="file" style="display:none" accept=".pdf,.xlsx,.xls" onchange="handleDocUpload(this,'costreports')">
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2>Cost Report Register</h2></div>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+      <thead><tr><th>Report</th><th>Date</th><th>Period</th><th class="r">Expenditure to Date</th><th class="r">Projected Final</th><th style="text-align:center">Download</th></tr></thead>
+      <tbody id="costReportLog"><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:32px">No cost reports issued yet. Reports will be uploaded monthly during construction.</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===================== TAB: VALUATIONS ===================== -->
+<div class="panel" id="panel-valuations">
+  <div class="card">
+    <div class="card-h"><h2>Valuations &amp; Payment Certificates</h2><span class="badge b-green">Payments</span></div>
+    <div class="card-b">
+      <p style="font-size:0.76rem;color:var(--text2);margin-bottom:16px">Monthly valuations and payment certificates for work completed. Each certificate includes the valuation, payment recommendation, and cumulative position.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Certificate No.</label>
+          <input type="text" id="certNo" placeholder="e.g. IPC 01" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Valuation Date</label>
+          <input type="date" id="certDate" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+        <div>
+          <label style="font-size:0.62rem;font-weight:600;display:block;margin-bottom:4px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Amount (incl VAT)</label>
+          <input type="text" id="certAmount" placeholder="e.g. R 250,000" style="padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;width:100%;font-size:0.74rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+        </div>
+      </div>
+      <div class="upload-zone" onclick="this.querySelector('input[type=file]').click()">
+        <div class="icon">&#128176;</div>
+        <div class="upload-title">Upload Payment Certificate</div>
+        <div class="upload-sub">PDF — signed certificate</div>
+        <input type="file" style="display:none" accept=".pdf,.xlsx,.xls" onchange="handleDocUpload(this,'valuations')">
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2>Payment Certificate Register</h2></div>
+    <div class="card-b" style="padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
+      <thead><tr><th>IPC No.</th><th>Date</th><th class="r">Work Done (ex VAT)</th><th class="r">Cumulative</th><th class="r">Net Due (incl VAT)</th><th>Status</th><th style="text-align:center">Download</th></tr></thead>
+      <tbody id="valuationLog"><tr><td colspan="7" style="text-align:center;color:var(--muted);padding:32px">No payment certificates issued yet. Valuations will be recorded here monthly during construction.</td></tr></tbody>
+    </table></div>
   </div>
 </div>
 
@@ -1433,6 +1641,41 @@ function handleDrawingFiles(files){
   const uf=document.getElementById('drawingUploadedFiles');
   uf.innerHTML='<div style="padding:12px;background:var(--green-d);border-radius:var(--rs);font-size:0.74rem;color:var(--green)">&#10003; '+files.length+' drawing file(s) uploaded for '+dtype+'</div>';
   setTimeout(()=>uf.innerHTML='',4000);
+}
+
+// GENERIC DOCUMENT UPLOAD HANDLER
+function handleDocUpload(input, section) {
+  if (!input.files || !input.files.length) return;
+  const file = input.files[0];
+  const zone = input.closest('.upload-zone');
+  zone.innerHTML = '<div style="padding:12px;color:var(--green);font-size:0.74rem">&#10003; ' + file.name + ' uploaded successfully</div>';
+  setTimeout(() => { zone.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:0.74rem">File recorded. Refresh to upload another.</div>'; }, 3000);
+  // Add to relevant log
+  const logId = section === 'siteminutes' ? 'minutesLog' : section === 'variations' ? 'variationLog' : section === 'programme' ? 'programmeLog' : section === 'costreports' ? 'costReportLog' : section === 'valuations' ? 'valuationLog' : null;
+  if (logId) {
+    const log = document.getElementById(logId);
+    if (log && log.querySelector('td[colspan]')) log.innerHTML = '';
+    const tr = document.createElement('tr');
+    const now = new Date().toLocaleDateString('en-ZA');
+    tr.innerHTML = '<td>' + now + '</td><td>' + now + '</td><td>' + file.name + '</td><td><span class="badge b-green">Uploaded</span></td><td style="text-align:center"><span class="badge b-green">&#10003;</span></td>';
+    log.appendChild(tr);
+  }
+}
+
+// PHOTO UPLOAD HANDLER
+function handlePhotoUpload(input) {
+  if (!input.files || !input.files.length) return;
+  const count = input.files.length;
+  const date = document.getElementById('photoDate').value || new Date().toLocaleDateString('en-ZA');
+  const desc = document.getElementById('photoDesc').value || 'Site photos';
+  const zone = input.closest('.upload-zone');
+  zone.innerHTML = '<div style="padding:12px;color:var(--green);font-size:0.74rem">&#10003; ' + count + ' photo(s) uploaded for ' + date + '</div>';
+  setTimeout(() => { zone.innerHTML = '<div style="padding:12px;color:var(--muted);font-size:0.74rem">Photos recorded. Refresh to upload more.</div>'; }, 3000);
+  const log = document.getElementById('photoLog');
+  if (log && log.querySelector('td[colspan]')) log.innerHTML = '';
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td>' + date + '</td><td>' + desc + '</td><td>' + count + ' file(s)</td><td><span class="badge b-green">Uploaded</span></td>';
+  log.appendChild(tr);
 }
 
 // QUOTE UPLOAD HANDLER
