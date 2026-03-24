@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ME-408 Immanuel Church — Financial Status Dashboard v2</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1"></script>
+<!-- Tender packs are pre-built ZIP files in Tender Packs/ folder -->
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+:root {
+  --bg:#09090b; --bg2:#0f0f12; --card:#141418; --elevated:#1e1e26; --inset:#0c0c0e;
+  --border:rgba(255,255,255,0.06); --border-b:rgba(255,255,255,0.1); --border-a:rgba(255,255,255,0.18);
+  --text:#f0f0f2; --text2:#a0a0b0; --muted:#5a5a6e;
+  --indigo:#6366f1; --indigo-d:rgba(99,102,241,0.12);
+  --gold:#eab308; --gold-d:rgba(234,179,8,0.1);
+  --green:#22c55e; --green-d:rgba(34,197,94,0.1);
+  --red:#ef4444; --red-d:rgba(239,68,68,0.1);
+  --cyan:#06b6d4; --cyan-d:rgba(6,182,212,0.1);
+  --orange:#f97316; --orange-d:rgba(249,115,22,0.1);
+  --purple:#a78bfa; --purple-d:rgba(167,139,250,0.1);
+  --r:10px; --rs:6px; --t:0.2s cubic-bezier(0.4,0,0.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;backdrop-filter:blur(24px)}
+.header-left h1{font-size:1.05rem;font-weight:700;letter-spacing:-0.3px}.header-left .sub{font-size:0.68rem;color:var(--muted);margin-top:2px}
+.header-logo{font-size:0.58rem;font-weight:800;letter-spacing:4px;color:var(--gold);padding:5px 12px;border:1px solid rgba(234,179,8,0.2);border-radius:4px;background:rgba(234,179,8,0.04)}
+.header-right{display:flex;align-items:center;gap:14px}.header-date{font-size:0.68rem;color:var(--muted)}
+.tabs{display:flex;background:var(--bg);border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto;position:sticky;top:54px;z-index:99}
+.tab{padding:11px 18px;cursor:pointer;font-size:0.72rem;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;transition:all var(--t)}
+.tab:hover{color:var(--text2)}.tab.active{color:var(--text);border-bottom-color:var(--indigo)}
+.tab .cnt{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;font-size:0.58rem;font-weight:700;background:var(--indigo-d);color:var(--indigo);border-radius:8px;margin-left:5px}
+.content{max-width:1400px;margin:0 auto;padding:20px}
+.panel{display:none;animation:slideUp 0.3s ease}.panel.active{display:block}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden;transition:border-color var(--t)}
+.card:hover{border-color:var(--border-b)}.card-h{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.card-h h2{font-size:0.78rem;font-weight:600}.card-b{padding:18px}
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:16px}
+.m{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden;transition:all var(--t)}
+.m:hover{border-color:var(--border-b);transform:translateY(-1px)}.m::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px}
+.m.indigo::before{background:linear-gradient(90deg,var(--indigo),transparent 80%)}
+.m.gold::before{background:linear-gradient(90deg,var(--gold),transparent 80%)}
+.m.green::before{background:linear-gradient(90deg,var(--green),transparent 80%)}
+.m.red::before{background:linear-gradient(90deg,var(--red),transparent 80%)}
+.m.orange::before{background:linear-gradient(90deg,var(--orange),transparent 80%)}
+.m.cyan::before{background:linear-gradient(90deg,var(--cyan),transparent 80%)}
+.m.purple::before{background:linear-gradient(90deg,var(--purple),transparent 80%)}
+.m-label{font-size:0.58rem;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);margin-bottom:5px;font-weight:600}
+.m-value{font-size:1.3rem;font-weight:800;letter-spacing:-0.5px}.m-sub{font-size:0.64rem;color:var(--muted);margin-top:3px;line-height:1.4}
+table{width:100%;border-collapse:collapse;font-size:0.74rem}
+th{background:var(--elevated);padding:9px 12px;text-align:left;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);font-size:0.62rem;text-transform:uppercase;letter-spacing:0.7px}
+td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2)}tr:hover td{background:rgba(255,255,255,0.015)}
+.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bh td{background:var(--elevated);font-weight:700;color:var(--indigo);font-size:0.76rem;border:none}
+.bt td{background:rgba(99,102,241,0.04);border-top:1px solid rgba(99,102,241,0.2);font-weight:600;color:var(--text)}
+.gt td{background:rgba(234,179,8,0.06);border-top:2px solid rgba(234,179,8,0.3);font-weight:800;color:var(--gold);font-size:0.82rem}
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:0.6rem;font-weight:600;letter-spacing:0.2px}
+.b-green{background:var(--green-d);color:var(--green)}.b-gold{background:var(--gold-d);color:var(--gold)}.b-red{background:var(--red-d);color:var(--red)}
+.b-orange{background:var(--orange-d);color:var(--orange)}.b-indigo{background:var(--indigo-d);color:var(--indigo)}.b-purple{background:var(--purple-d);color:var(--purple)}.b-cyan{background:var(--cyan-d);color:var(--cyan)}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px}
+.chart-card h3{font-size:0.72rem;font-weight:600;color:var(--text2);margin-bottom:12px;text-align:center}
+.chart-wrap{position:relative;height:280px}
+.risk-bar{background:var(--red-d);border:1px solid rgba(239,68,68,0.2);border-radius:var(--rs);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:14px}
+.risk-icon{font-size:1.3rem}.risk-text h4{font-size:0.78rem;font-weight:700;color:var(--red)}.risk-text p{font-size:0.68rem;color:var(--text2);margin-top:2px}
+/* REVISED PRICING */
+.revised-placeholder{border:2px dashed var(--gold);border-radius:var(--r);padding:40px;text-align:center;background:rgba(234,179,8,0.03);margin-bottom:14px}
+.revised-placeholder h3{color:var(--gold);font-size:1rem;margin-bottom:8px}.revised-placeholder p{color:var(--muted);font-size:0.76rem;line-height:1.6}
+.rev-row{transition:background 0.3s}.rev-row.changed td{background:rgba(34,197,94,0.04)}.rev-row.changed .rev-new{color:var(--green);font-weight:700}
+.rev-delta-pos{color:var(--green);font-weight:600;font-size:0.68rem}.rev-delta-neg{color:var(--red);font-weight:600;font-size:0.68rem}
+/* PACKAGES */
+.pkg-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.pkg-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:all var(--t)}
+.pkg-card:hover{border-color:var(--border-b)}
+.pkg-top{padding:18px 20px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.pkg-top h3{font-size:0.9rem;font-weight:600}.pkg-meta{font-size:0.7rem;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pkg-amount{font-size:1.2rem;font-weight:800;color:var(--indigo);letter-spacing:-0.5px}
+.pkg-body{padding:0 20px 18px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pkg-section-label{font-size:0.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:6px}
+.scope-list{list-style:none;padding:0;margin:0}.scope-list li{padding:3px 0 3px 14px;position:relative;font-size:0.74rem;color:var(--text2);line-height:1.5}
+.scope-list li::before{content:'';position:absolute;left:0;top:10px;width:4px;height:4px;border-radius:1px;background:var(--indigo)}
+.pkg-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:rgba(255,255,255,0.01)}
+.drawing-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.drawing-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:var(--elevated);border:1px solid var(--border);border-radius:3px;font-size:0.62rem;color:var(--muted);font-weight:500}
+.drawing-pill .pill-icon{color:var(--red);font-size:0.7rem}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:4px;font-size:0.73rem;font-weight:600;cursor:pointer;border:none;transition:all var(--t);font-family:inherit}
+.btn-primary{background:var(--indigo);color:#fff}.btn-primary:hover{background:#5558e6;transform:translateY(-1px)}
+.btn-download{background:var(--green);color:#052e16;font-weight:700}.btn-download:hover{background:#16a34a;transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--border-b);color:var(--text2)}.btn-outline:hover{border-color:var(--indigo);color:var(--indigo)}
+.btn-sm{padding:6px 12px;font-size:0.68rem}
+.download-status{display:none;align-items:center;gap:6px;padding:6px 12px;background:var(--indigo-d);border-radius:4px;font-size:0.7rem;color:var(--indigo)}
+.download-status.show{display:inline-flex}
+.spinner{width:12px;height:12px;border:2px solid transparent;border-top:2px solid currentColor;border-radius:50%;animation:spin 0.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* UPLOAD */
+.upload-zone{border:1px dashed var(--border-b);border-radius:var(--r);padding:40px;text-align:center;cursor:pointer;transition:all var(--t);background:var(--inset)}
+.upload-zone:hover{border-color:var(--indigo);background:var(--indigo-d)}
+.upload-zone .icon{font-size:2rem;margin-bottom:10px;opacity:0.4}.upload-zone .upload-title{font-weight:600;color:var(--text2);font-size:0.82rem}
+.upload-zone .upload-sub{font-size:0.7rem;color:var(--muted);margin-top:4px}
+.filter-bar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-bar select,.filter-bar input{padding:8px 12px;border:1px solid var(--border-b);border-radius:4px;font-size:0.75rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none;transition:border-color var(--t)}
+.filter-bar select:focus,.filter-bar input:focus{border-color:var(--indigo)}.filter-bar input::placeholder{color:var(--muted)}
+.boq-heading td{background:var(--elevated)!important;font-weight:700;color:var(--indigo);font-size:0.72rem;padding:6px 12px 6px 24px;border-bottom:1px solid var(--border);letter-spacing:0.2px}
+.boq-item td{font-size:0.72rem;color:var(--text2);padding:5px 12px}.boq-item:hover td{background:rgba(99,102,241,0.03)}
+.bill-header td{background:rgba(99,102,241,0.08)!important;font-weight:800;color:var(--indigo);font-size:0.8rem;padding:10px 12px;border-top:2px solid rgba(99,102,241,0.3);border-bottom:1px solid rgba(99,102,241,0.15);cursor:pointer}
+.bill-header:hover td{background:rgba(99,102,241,0.12)!important}
+.bill-header .toggle{display:inline-block;width:16px;font-size:0.7rem;color:var(--muted);transition:transform 0.2s}
+.bill-header.collapsed .toggle{transform:rotate(-90deg)}
+.bill-total td{background:rgba(99,102,241,0.04)!important;border-top:1px solid rgba(99,102,241,0.15);font-weight:700;color:var(--text);font-size:0.74rem}
+.boq-zero td{color:var(--muted);font-style:italic}
+.filter-count{font-size:0.68rem;color:var(--muted);margin-left:auto;white-space:nowrap}
+footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border-top:1px solid var(--border);margin-top:20px}
+/* Summary table styles */
+.summary-table{width:100%;border-collapse:collapse;font-size:0.76rem}
+.summary-table th{background:var(--elevated);padding:10px 14px;text-align:left;font-weight:600;color:var(--muted);border-bottom:1px solid var(--border);font-size:0.64rem;text-transform:uppercase;letter-spacing:0.7px}
+.summary-table td{padding:9px 14px;border-bottom:1px solid var(--border);color:var(--text2)}
+.summary-table .section-header td{background:var(--elevated);font-weight:700;color:var(--indigo);font-size:0.76rem;padding:10px 14px;border-top:2px solid rgba(99,102,241,0.2)}
+.summary-table .subtotal td{background:rgba(99,102,241,0.04);font-weight:700;color:var(--text);border-top:1px solid rgba(99,102,241,0.15)}
+.summary-table .grand-total td{background:rgba(234,179,8,0.06);font-weight:800;color:var(--gold);font-size:0.82rem;border-top:2px solid rgba(234,179,8,0.3)}
+.summary-table .spacer td{padding:4px;border:none;background:transparent}
+/* Info box */
+.info-box{padding:14px 18px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.15);border-radius:var(--rs);font-size:0.74rem;color:var(--text2);margin-top:14px}
+@media(max-width:900px){.chart-grid{grid-template-columns:1fr}.mg{grid-template-columns:repeat(2,1fr)}.pkg-body{grid-template-columns:1fr}}
+@media(max-width:600px){.mg{grid-template-columns:1fr}}
+@media print{body{background:#fff;color:#000}.header,.tabs{position:static}.card{break-inside:avoid;border:1px solid #ddd}.panel{display:block!important}td,th{color:#333;border-color:#ddd}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <h1>ME-408 Immanuel Church Seatides — Financial Status</h1>
+    <div class="sub">Latest Priced BOQ &bull; DF Strang Buildings &bull; Metric Edge Cost & Construction Consultants</div>
+  </div>
+  <div class="header-right">
+    <div class="header-date">24 March 2026</div>
+    <div class="header-logo">METRIC EDGE</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('summary',this)">Financial Summary</div>
+  <div class="tab" onclick="showTab('bills',this)">Build Breakdown <span class="cnt">16</span></div>
+  <div class="tab" onclick="showTab('revised',this)">Revised vs Original <span class="cnt">40</span></div>
+  <div class="tab" onclick="showTab('subcon',this)">Subcontractors <span class="cnt">10</span></div>
+  <div class="tab" onclick="showTab('packages',this)">Procurement Packs <span class="cnt">11</span></div>
+  <div class="tab" onclick="showTab('uploads',this)">Upload Pricing</div>
+  <div class="tab" onclick="showTab('drawings',this)">Drawings</div>
+</div>
+
+<div class="content">
+
+<!-- ===================== TAB 1: FINANCIAL SUMMARY ===================== -->
+<div class="panel active" id="panel-summary">
+
+  <div class="card">
+    <div class="card-h"><h2>Project Financial Summary</h2><span class="badge b-gold">Revised 24 Mar 2026</span></div>
+    <div class="card-b" style="padding:0">
+      <table class="summary-table">
+        <thead>
+          <tr><th style="padding-left:18px;min-width:260px">Description</th><th class="r" style="min-width:130px">Original</th><th class="r" style="min-width:130px">Revised</th><th class="r" style="min-width:120px">Variance</th></tr>
+        </thead>
+        <tbody>
+          <tr class="section-header"><td style="padding-left:18px" colspan="4">Construction BOQ</td></tr>
+          <tr><td style="padding-left:18px">Preliminaries &amp; General</td><td class="r">R 604,500</td><td class="r">R 545,000</td><td class="r" style="color:var(--green)">R 59,500</td></tr>
+          <tr><td style="padding-left:18px">Building Work (Bills 1&ndash;12)</td><td class="r">R 1,869,262</td><td class="r">R 1,702,481</td><td class="r" style="color:var(--green)">R 166,781</td></tr>
+          <tr><td style="padding-left:18px">Subcontract Packages (Bill 13)</td><td class="r">R 1,352,182</td><td class="r">R 1,303,042</td><td class="r" style="color:var(--green)">R 49,140</td></tr>
+          <tr><td style="padding-left:18px">Provisional Sums (Bill 14)</td><td class="r">R 175,000</td><td class="r">R 170,000</td><td class="r" style="color:var(--green)">R 5,000</td></tr>
+          <tr><td style="padding-left:18px">External Works</td><td class="r">R 42,633</td><td class="r">R 42,633</td><td class="r" style="color:var(--muted)">&mdash;</td></tr>
+          <tr class="subtotal"><td style="padding-left:18px;font-weight:700">Subtotal ex VAT</td><td class="r" style="font-weight:700">R 4,043,577</td><td class="r" style="font-weight:700">R 3,779,115</td><td class="r" style="font-weight:700;color:var(--green)">R 264,463</td></tr>
+          <tr><td style="padding-left:18px">Markup @ 7.5%</td><td class="r">R 303,268</td><td class="r">R 283,434</td><td class="r" style="color:var(--green)">R 19,835</td></tr>
+          <tr><td style="padding-left:18px">VAT @ 15%</td><td class="r">R 652,027</td><td class="r">R 609,382</td><td class="r" style="color:var(--green)">R 42,645</td></tr>
+          <tr class="grand-total"><td style="padding-left:18px">BOQ Total incl. VAT</td><td class="r" style="color:var(--gold)">R 4,998,872</td><td class="r" style="color:var(--gold)">R 4,671,930</td><td class="r" style="color:var(--green)">R 326,942</td></tr>
+
+          <tr class="spacer"><td colspan="4"></td></tr>
+
+          <tr class="section-header"><td style="padding-left:18px" colspan="4">Below-the-Line Additions</td></tr>
+          <tr><td style="padding-left:18px">Sound Installation</td><td class="r">R 200,000</td><td class="r">R 200,000</td><td class="r" style="color:var(--muted)">&mdash;</td></tr>
+          <tr><td style="padding-left:18px">Air Conditioning</td><td class="r">R 150,000</td><td class="r">R 150,000</td><td class="r" style="color:var(--muted)">&mdash;</td></tr>
+          <tr><td style="padding-left:18px">Chairs / Seating</td><td class="r">R 100,000</td><td class="r">R 100,000</td><td class="r" style="color:var(--muted)">&mdash;</td></tr>
+          <tr><td style="padding-left:18px">Kitchen Counter &amp; Fitout</td><td class="r">R 100,000</td><td class="r">R 100,000</td><td class="r" style="color:var(--muted)">&mdash;</td></tr>
+          <tr><td style="padding-left:18px">Coffee Machine</td><td class="r">R 30,000</td><td class="r">R 30,000</td><td class="r" style="color:var(--muted)">&mdash;</td></tr>
+          <tr><td style="padding-left:18px">Fridges</td><td class="r">R 20,000</td><td class="r">R 20,000</td><td class="r" style="color:var(--muted)">&mdash;</td></tr>
+          <tr><td style="padding-left:18px">Doors (existing downstairs)</td><td class="r">R 50,000</td><td class="r">R 30,000</td><td class="r" style="color:var(--green)">R 20,000</td></tr>
+          <tr class="subtotal"><td style="padding-left:18px;font-weight:700">Subtotal Below-the-Line ex VAT</td><td class="r" style="font-weight:700">R 650,000</td><td class="r" style="font-weight:700">R 630,000</td><td class="r" style="font-weight:700;color:var(--green)">R 20,000</td></tr>
+          <tr><td style="padding-left:18px">VAT @ 15%</td><td class="r">R 97,500</td><td class="r">R 94,500</td><td class="r" style="color:var(--green)">R 3,000</td></tr>
+          <tr class="subtotal"><td style="padding-left:18px;font-weight:700">Below-the-Line incl. VAT</td><td class="r" style="font-weight:700">R 747,500</td><td class="r" style="font-weight:700">R 724,500</td><td class="r" style="font-weight:700;color:var(--green)">R 23,000</td></tr>
+
+          <tr class="spacer"><td colspan="4"></td></tr>
+
+          <tr class="grand-total"><td style="padding-left:18px;font-size:0.86rem">TOTAL PROJECT EXPOSURE incl. VAT</td><td class="r" style="font-size:0.86rem;color:var(--gold)">R 5,746,372</td><td class="r" style="font-size:0.86rem;color:var(--gold)">R 5,396,430</td><td class="r" style="font-size:0.86rem;color:var(--green)">R 349,942</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="risk-bar">
+    <div class="risk-icon">&#9888;</div>
+    <div class="risk-text">
+      <h4>AC Budget Risk — Quote R 170k–R 400k vs R 150k Budget</h4>
+      <p>Tim Brooks Air Conditioning (Quote 5641, 20 Mar 2026). Auditorium-only = R 170k. Full building = R 400k. Decision required.</p>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card"><h3>Cost Split — High Level</h3><div class="chart-wrap"><canvas id="chartHighLevel"></canvas></div></div>
+    <div class="chart-card"><h3>Cost by Trade (ex VAT)</h3><div class="chart-wrap"><canvas id="chartTrades"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ===================== TAB 2: BUILD BREAKDOWN ===================== -->
+<div class="panel" id="panel-bills">
+  <div class="card">
+    <div class="card-h"><h2>Build Breakdown — Revised Total R 5,396,430</h2><span class="badge b-indigo" id="boqItemCount">145 Items</span></div>
+    <div class="card-b" style="padding:8px 18px 0">
+      <div class="filter-bar">
+        <select id="billFilter" onchange="renderBOQ()">
+          <option value="all">All Bills</option>
+          <option value="01">Bill 01 — Preliminaries</option>
+          <option value="1">Bill 1 — Alterations</option>
+          <option value="2">Bill 2 — Earthworks</option>
+          <option value="3">Bill 3 — Concrete & Formwork</option>
+          <option value="4">Bill 4 — Masonry</option>
+          <option value="5">Bill 5 — Waterproofing</option>
+          <option value="6">Bill 6 — Carpentry & Joinery</option>
+          <option value="7">Bill 7 — Ceilings & Partitions</option>
+          <option value="8">Bill 8 — Floor Coverings</option>
+          <option value="9">Bill 9 — Plastering</option>
+          <option value="10">Bill 10 — Tiling</option>
+          <option value="11">Bill 11 — Plumbing & Drainage</option>
+          <option value="12">Bill 12 — Paintwork</option>
+          <option value="13">Bill 13 — Subcontract Packages</option>
+          <option value="14">Bill 14 — Provisional Sums</option>
+          <option value="EW">External Works</option>
+        </select>
+        <input type="text" id="boqSearch" placeholder="Search items..." oninput="renderBOQ()" style="flex:1;max-width:300px">
+        <span class="filter-count" id="filterCount"></span>
+      </div>
+    </div>
+    <div class="card-b" style="padding:0;overflow-x:auto"><table>
+      <thead><tr><th style="width:60px">Bill</th><th style="width:50px">Item</th><th>Description</th><th class="r" style="width:50px">Unit</th><th class="r" style="width:70px">Qty</th><th class="r" style="width:90px">Rate</th><th class="r" style="width:110px">Amount</th></tr></thead>
+      <tbody id="boqBody"></tbody>
+    </table></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card"><h3>Bill Values</h3><div style="position:relative;height:460px"><canvas id="chartBillsBar"></canvas></div></div>
+    <div class="chart-card"><h3>Bill Proportions</h3><div style="position:relative;height:460px"><canvas id="chartBillsPie"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ===================== TAB 3: REVISED VS ORIGINAL ===================== -->
+<div class="panel" id="panel-revised">
+  <div class="mg" style="grid-template-columns:repeat(4,1fr)">
+    <div class="m indigo"><div class="m-label">Original Total (ex VAT)</div><div class="m-value">R 4,043,577</div><div class="m-sub">DF Strang — Original Submission</div></div>
+    <div class="m green"><div class="m-label">Revised Total (ex VAT)</div><div class="m-value" id="revisedTotalCard" style="color:var(--green)">R 3,779,115</div><div class="m-sub">Revised 24 Mar 2026</div></div>
+    <div class="m gold"><div class="m-label">Total Saving (ex VAT)</div><div class="m-value" id="totalSavingCard" style="color:var(--gold)">R 264,463</div><div class="m-sub">40 items repriced</div></div>
+    <div class="m purple"><div class="m-label">% Reduction</div><div class="m-value" id="pctReductionCard" style="color:var(--green)">6.5%</div><div class="m-sub">On total ex VAT</div></div>
+  </div>
+
+  <div class="revised-placeholder" id="revisedPlaceholder" style="display:none">
+    <h3>Loading comparison data...</h3>
+  </div>
+
+  <div class="card">
+    <div class="card-h">
+      <h2>Original vs Revised — Full BOQ Line Items</h2>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="revBillFilter" onchange="renderRevised()" style="padding:6px 10px;border:1px solid var(--border-b);border-radius:4px;font-size:0.72rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+          <option value="all">All Bills</option>
+          <option value="01">Bill 01 — Preliminaries</option>
+          <option value="1">Bill 1 — Alterations</option>
+          <option value="2">Bill 2 — Earthworks</option>
+          <option value="3">Bill 3 — Concrete & Formwork</option>
+          <option value="4">Bill 4 — Masonry</option>
+          <option value="5">Bill 5 — Waterproofing</option>
+          <option value="6">Bill 6 — Carpentry & Joinery</option>
+          <option value="7">Bill 7 — Ceilings & Partitions</option>
+          <option value="8">Bill 8 — Floor Coverings</option>
+          <option value="9">Bill 9 — Plastering</option>
+          <option value="10">Bill 10 — Tiling</option>
+          <option value="11">Bill 11 — Plumbing & Drainage</option>
+          <option value="12">Bill 12 — Paintwork</option>
+          <option value="13">Bill 13 — Subcontract Packages</option>
+          <option value="14">Bill 14 — Provisional Sums</option>
+          <option value="EW">External Works</option>
+        </select>
+        <span class="badge b-green">Auto-populated from 24 Mar 2026 BOQ</span>
+        <span id="revChangedCount" style="font-size:0.68rem;color:var(--muted)"></span>
+      </div>
+    </div>
+    <div class="card-b" style="padding:0;overflow-x:auto">
+      <table id="revisedTable" style="font-size:0.72rem">
+        <thead>
+          <tr>
+            <th style="width:44px">Bill</th>
+            <th style="width:36px">Item</th>
+            <th style="min-width:180px">Description</th>
+            <th class="r" style="width:36px">Unit</th>
+            <th class="r" style="width:50px">Qty</th>
+            <th class="r" style="min-width:100px;white-space:nowrap">Orig Rate</th>
+            <th class="r" style="min-width:110px;white-space:nowrap">Orig Amt</th>
+            <th class="r" style="min-width:100px;white-space:nowrap">Rev Rate</th>
+            <th class="r" style="min-width:110px;white-space:nowrap">Rev Amt</th>
+            <th class="r" style="min-width:100px;white-space:nowrap">Saving</th>
+          </tr>
+        </thead>
+        <tbody id="revisedBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="card-h"><h2>Grand Total Reconciliation</h2></div>
+    <div class="card-b" style="padding:0">
+      <table>
+        <thead><tr><th></th><th class="r">Original</th><th class="r">Revised</th><th class="r">Saving</th><th class="r">%</th></tr></thead>
+        <tbody id="revisedSummaryBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="chart-grid" style="margin-top:14px">
+    <div class="chart-card"><h3>Original vs Revised by Bill</h3><div style="position:relative;height:400px"><canvas id="chartRevised"></canvas></div></div>
+    <div class="chart-card"><h3>Revised Grand Total Waterfall</h3><div style="position:relative;height:400px"><canvas id="chartRevisedWaterfall"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ===================== TAB 4: SUBCONTRACTORS ===================== -->
+<div class="panel" id="panel-subcon">
+  <div class="mg" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+    <div class="m indigo"><div class="m-label">Total Subcontract</div><div class="m-value">R 1,303,042</div><div class="m-sub">Revised Bill 13 total</div></div>
+    <div class="m green"><div class="m-label">Packages Quoted</div><div class="m-value" style="color:var(--green)">7</div><div class="m-sub">Confirmed supplier quotes</div></div>
+    <div class="m gold"><div class="m-label">Largest Package</div><div class="m-value" style="color:var(--gold)">R 477,691</div><div class="m-sub">SP-02 Roof Structure</div></div>
+  </div>
+
+  <!-- Section A: Confirmed Subcontractors -->
+  <div class="card">
+    <div class="card-h"><h2>Section A: Confirmed Subcontractors (with quotes)</h2></div>
+    <div class="card-b" style="padding:0"><table>
+      <thead><tr><th>Package</th><th>Description</th><th>Supplier</th><th class="r">Amount (ex VAT)</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>SP-01</td><td>Timber Deck &amp; Staircase</td><td>Big Decks</td><td class="r">R 103,655</td><td><span class="badge b-green">Quoted</span></td></tr>
+        <tr><td>SP-02</td><td>Roof Structure — Supply &amp; Install</td><td>Seacon Roofing</td><td class="r">R 477,691</td><td><span class="badge b-green">Quoted</span></td></tr>
+        <tr><td>SP-03</td><td>Aluminium Windows &amp; Doors</td><td>GT Aluminium</td><td class="r">R 302,124</td><td><span class="badge b-green">Quoted</span></td></tr>
+        <tr><td>SP-05</td><td>Metal Palisade / Gate</td><td>RSW Engineering</td><td class="r">R 38,511</td><td><span class="badge b-green">Quoted</span></td></tr>
+        <tr><td>SP-06</td><td>Balustrades</td><td>RSW Engineering</td><td class="r">R 17,557</td><td><span class="badge b-green">Quoted</span></td></tr>
+        <tr><td>SP-07</td><td>Rainwater Goods</td><td>Gutter Brigade</td><td class="r">R 29,700</td><td><span class="badge b-green">Quoted</span></td></tr>
+        <tr><td>SP-11</td><td>Electrical Installation</td><td>CW Electrical</td><td class="r">R 287,405</td><td><span class="badge b-green">Quoted</span></td></tr>
+        <tr><td>SP-11b</td><td>Three Phase Upgrade (Optional)</td><td>CW Electrical</td><td class="r">R 46,400</td><td><span class="badge b-indigo">Optional</span></td></tr>
+        <tr><td>SP-08</td><td>Carpet (Floor Coverings)</td><td>Church to procure</td><td class="r">R 98,000</td><td><span class="badge b-cyan">Procurement Pack Ready</span></td></tr>
+        <tr><td>SP-09</td><td>Decorative/Self-levelling Screed</td><td>Subcontractor</td><td class="r">R 50,460</td><td><span class="badge b-gold">For Pricing</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- Section B: Provisional Sums -->
+  <div class="card">
+    <div class="card-h"><h2>Section B: Provisional Sums (No Pricing Yet)</h2></div>
+    <div class="card-b" style="padding:0"><table>
+      <thead><tr><th>Bill 14</th><th>Description</th><th class="r">Provision (ex VAT)</th><th>Procurement Pack</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>PS-01</td><td>Ironmongery</td><td class="r">R 15,000</td><td>No</td><td><span class="badge b-purple">Provisional Sum</span></td></tr>
+        <tr><td>PS-02</td><td>Landscaping</td><td class="r">R 25,000</td><td>No</td><td><span class="badge b-purple">Provisional Sum</span></td></tr>
+        <tr><td>PS-03</td><td>Sanware/Brassware/Geysers</td><td class="r">R 30,000</td><td>No</td><td><span class="badge b-purple">Provisional Sum</span></td></tr>
+        <tr><td>PS-04</td><td>Mirrors &amp; Bathroom Accessories</td><td class="r">R 5,000</td><td>No</td><td><span class="badge b-purple">Provisional Sum</span></td></tr>
+        <tr><td>PS-05</td><td>Signage</td><td class="r">R 10,000</td><td>No</td><td><span class="badge b-purple">Provisional Sum</span></td></tr>
+        <tr><td>PS-06</td><td>Sewer</td><td class="r">R 15,000</td><td>No</td><td><span class="badge b-purple">Provisional Sum</span></td></tr>
+        <tr><td>PS-07</td><td>Feature Wall Signage</td><td class="r">R 5,000</td><td>No</td><td><span class="badge b-purple">Provisional Sum</span></td></tr>
+        <tr><td>PS-08</td><td>Stage</td><td class="r">R 40,000</td><td>Yes — Refer to Procurement Pack tab</td><td><span class="badge b-cyan">Procurement Pack Ready</span></td></tr>
+        <tr><td>PS-09</td><td>Sound &amp; Media Joinery</td><td class="r">R 30,000</td><td>Yes — Refer to Procurement Pack tab</td><td><span class="badge b-cyan">Procurement Pack Ready</span></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card"><h3>Package Split</h3><div class="chart-wrap"><canvas id="chartSubPie"></canvas></div></div>
+    <div class="chart-card"><h3>Subcontract vs Builder's Work</h3><div class="chart-wrap"><canvas id="chartSubVsBuilder"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ===================== TAB 5: PROCUREMENT PACKS ===================== -->
+<div class="panel" id="panel-packages">
+  <div class="mg" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+    <div class="m indigo"><div class="m-label">Tender Packs Available</div><div class="m-value">11</div><div class="m-sub">PDF tender docs + drawings as .zip</div></div>
+    <div class="m green"><div class="m-label">All Packages</div><div class="m-value" style="color:var(--green)">Ready</div><div class="m-sub">Actual tender packs as sent</div></div>
+  </div>
+  <div class="pkg-grid" id="pkgCards"></div>
+</div>
+
+<!-- ===================== TAB 6: UPLOAD PRICING ===================== -->
+<div class="panel" id="panel-uploads">
+  <div class="card">
+    <div class="card-h"><h2>Upload Revised Pricing</h2></div>
+    <div class="card-b">
+      <p style="margin-bottom:16px;font-size:0.78rem;color:var(--muted)">Subcontractors and the Church can upload revised quotations for each package.</p>
+      <div style="margin-bottom:16px">
+        <label style="font-size:0.68rem;font-weight:600;display:block;margin-bottom:6px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Select Package</label>
+        <select id="uploadPkg" style="padding:9px 14px;border:1px solid var(--border-b);border-radius:4px;width:100%;max-width:400px;font-size:0.78rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+          <option>SP-01: Timber Deck &amp; Staircase</option><option>SP-02: Roof Structure</option><option>SP-03: Aluminium Windows &amp; Doors</option>
+          <option>SP-05: Metal Palisade / Gate</option><option>SP-06: Metal Balustrades</option>
+          <option>SP-07: Rainwater Goods</option><option>SP-08: Carpets</option><option>SP-09: Specialist Floor Screeds</option>
+          <option>SP-11: Electrical Installation</option><option>SP-12: Stage Construction</option><option>SP-13: Sound &amp; Media Joinery</option>
+          <option>NEW: Sound Installation</option><option>NEW: Air Conditioning</option><option>NEW: Kitchen Fit-out</option><option>NEW: Chairs / Seating</option>
+        </select>
+      </div>
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+        <div class="icon">&#128206;</div>
+        <div class="upload-title">Drop files here or click to upload</div>
+        <div class="upload-sub">PDF, XLSX, DOCX — Max 25MB</div>
+        <input type="file" id="fileInput" style="display:none" multiple accept=".pdf,.xlsx,.xls,.docx,.doc">
+      </div>
+      <div id="uploadedFiles" style="margin-top:12px"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-h"><h2>Uploaded Documents Log</h2></div>
+    <div class="card-b" style="padding:0"><table>
+      <thead><tr><th>Date</th><th>Package</th><th>File</th><th>Status</th></tr></thead>
+      <tbody id="uploadLog"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:32px">No documents uploaded yet</td></tr></tbody>
+    </table></div>
+  </div>
+</div>
+
+<!-- ===================== TAB 7: DRAWINGS ===================== -->
+<div class="panel" id="panel-drawings">
+
+  <div class="card">
+    <div class="card-h"><h2>Architectural Drawings</h2><span class="badge b-indigo">Narrative Architects — N2407</span></div>
+    <div class="card-b" style="padding:0"><table>
+      <thead><tr><th style="width:40px">#</th><th style="width:140px">Drawing</th><th>Description</th><th class="r" style="width:100px">Date</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td style="font-weight:600;color:var(--indigo)">N2407_01</td><td>Lower Ground Storey</td><td class="r">Dec 2025</td></tr>
+        <tr><td>2</td><td style="font-weight:600;color:var(--indigo)">N2407_02</td><td>Upper Ground Storey</td><td class="r">Dec 2025</td></tr>
+        <tr><td>3</td><td style="font-weight:600;color:var(--indigo)">N2407_03</td><td>Roof Storey</td><td class="r">Dec 2025</td></tr>
+        <tr><td>4</td><td style="font-weight:600;color:var(--indigo)">N2407_04</td><td>Sections + Elevations</td><td class="r">Dec 2025</td></tr>
+        <tr><td>5</td><td style="font-weight:600;color:var(--indigo)">N2407_05</td><td>Elevations</td><td class="r">Dec 2025</td></tr>
+        <tr><td>6</td><td style="font-weight:600;color:var(--indigo)">N2407_06</td><td>Window &amp; Door Schedule 01</td><td class="r">Dec 2025</td></tr>
+        <tr><td>7</td><td style="font-weight:600;color:var(--indigo)">N2407_07</td><td>Window &amp; Door Schedule 02</td><td class="r">Dec 2025</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h2>Structural / Engineer Drawings</h2><span class="badge b-purple">Sutherland — 9721</span></div>
+    <div class="card-b" style="padding:0"><table>
+      <thead><tr><th style="width:40px">#</th><th style="width:140px">Drawing</th><th>Description</th><th class="r" style="width:100px">Date</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td style="font-weight:600;color:var(--purple)">9721_S_DW001</td><td>Foundation Layout and Details</td><td class="r">Dec 2025</td></tr>
+        <tr><td>2</td><td style="font-weight:600;color:var(--purple)">9721_S_DW002</td><td>Surface Bed Layout</td><td class="r">Dec 2025</td></tr>
+        <tr><td>3</td><td style="font-weight:600;color:var(--purple)">9721_S_DW003</td><td>First Floor and Roof Layout</td><td class="r">Dec 2025</td></tr>
+        <tr><td>4</td><td style="font-weight:600;color:var(--purple)">9721_S_DW004</td><td>Building Sections</td><td class="r">Dec 2025</td></tr>
+        <tr><td>5</td><td style="font-weight:600;color:var(--purple)">9721_S_DW005</td><td>Typical Brickwork Details</td><td class="r">Dec 2025</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="info-box">
+    Tender drawings shown above. Construction drawings will be uploaded here when issued. Drawing revisions will be tracked.
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="card-h"><h2>Upload New Drawings</h2></div>
+    <div class="card-b">
+      <div style="margin-bottom:16px">
+        <label style="font-size:0.68rem;font-weight:600;display:block;margin-bottom:6px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Drawing Type</label>
+        <select id="drawingType" style="padding:9px 14px;border:1px solid var(--border-b);border-radius:4px;width:100%;max-width:400px;font-size:0.78rem;background:var(--elevated);color:var(--text);font-family:inherit;outline:none">
+          <option>Architectural - Construction Issue</option>
+          <option>Structural - Construction Issue</option>
+        </select>
+      </div>
+      <div class="upload-zone" id="drawingUploadZone" onclick="document.getElementById('drawingFileInput').click()">
+        <div class="icon">&#128196;</div>
+        <div class="upload-title">Drop drawing files here or click to upload</div>
+        <div class="upload-sub">PDF — Max 25MB</div>
+        <input type="file" id="drawingFileInput" style="display:none" multiple accept=".pdf">
+      </div>
+      <div id="drawingUploadedFiles" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>ME-408 Immanuel Church Seatides &bull; Financial Status Dashboard v2 &bull; Metric Edge Cost & Construction Consultants &bull; 24 March 2026</footer>
+
+<script>
+const bills=[
+  {id:'01',name:'Preliminaries & General',amt:604500,color:'#6366f1'},
+  {id:'1',name:'Alterations',amt:173742.50,color:'#818cf8'},
+  {id:'2',name:'Earthworks',amt:36922,color:'#a78bfa'},
+  {id:'3',name:'Concrete, Formwork & Reinforcement',amt:345110.64,color:'#06b6d4'},
+  {id:'4',name:'Masonry',amt:380507.80,color:'#0ea5e9'},
+  {id:'5',name:'Waterproofing',amt:7400,color:'#22d3ee'},
+  {id:'6',name:'Carpentry & Joinery',amt:39365.80,color:'#10b981'},
+  {id:'7',name:'Ceilings & Partitions',amt:215422.90,color:'#34d399'},
+  {id:'8',name:'Floor Coverings',amt:98000,color:'#6ee7b7'},
+  {id:'9',name:'Plastering',amt:293031,color:'#eab308'},
+  {id:'10',name:'Tiling',amt:40880,color:'#fbbf24'},
+  {id:'11',name:'Plumbing & Drainage',amt:51450,color:'#f97316'},
+  {id:'12',name:'Paintwork',amt:187429.10,color:'#fb923c'},
+  {id:'13',name:'Subcontract Packages',amt:1352182.06,color:'#ef4444'},
+  {id:'14',name:'Provisional Sums',amt:175000,color:'#f87171'},
+  {id:'EW',name:'External Works',amt:42633.44,color:'#a855f7'}
+];
+const totalExVat=4043577.24, markup=303268.29, inclMarkup=4346845.53, vat=652026.83, inclVat=4998872.36;
+function R(n){return'R '+Math.round(n).toLocaleString('en-ZA')}
+function pct(n,t){return((n/t)*100).toFixed(1)+'%'}
+function showTab(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+}
+
+// FULL BOQ DATA — injected from ME-408 BOQ spreadsheet
+const boqData = [
+  {bill:"01",itemNo:"",desc:"PRELIMINARIES",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"01",itemNo:"1",desc:"Establishment",unit:"Item",qty:1.0,rate:85000.0,amt:85000.0},
+  {bill:"01",itemNo:"2",desc:"Site Preliminaries and office overheads + QS measure sched of quants",unit:"Mnths",qty:6.0,rate:85000.0,amt:510000.0},
+  {bill:"01",itemNo:"3",desc:"Contract Works Insurances--Existing Building-- Excluded   CLIENT TO DO",unit:"Item",qty:null,rate:null,amt:0},
+  {bill:"01",itemNo:"4",desc:"Public Liability Insurances  By Builder",unit:"Item",qty:1.0,rate:3500.0,amt:3500.0},
+  {bill:"01",itemNo:"5",desc:"Site Toilets",unit:"Mnths",qty:6.0,rate:1000.0,amt:6000.0},
+  {bill:"1",itemNo:"",desc:"ALTERATIONS",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"1",itemNo:"",desc:"Breaking up and removing",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"1",itemNo:"1",desc:"Break/demolish existing columns/piers and cart away",unit:"No",qty:4.0,rate:850.0,amt:3400.0},
+  {bill:"1",itemNo:"2",desc:"Break existing surface bed (100mm thick assumed)",unit:"m\u00B2",qty:10.65,rate:1750.0,amt:18637.5},
+  {bill:"1",itemNo:"",desc:"Demolishing and carting away",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"1",itemNo:"3",desc:"Planter wall",unit:"m",qty:7.0,rate:175.0,amt:1225.0},
+  {bill:"1",itemNo:"4",desc:"Demolish existing Staircase",unit:"m\u00B2",qty:6.0,rate:450.0,amt:2700.0},
+  {bill:"1",itemNo:"",desc:"Taking down and removing",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"1",itemNo:"5",desc:"Demolish existing walls and cartaway",unit:"m\u00B2",qty:21.0,rate:180.0,amt:3780.0},
+  {bill:"1",itemNo:"6",desc:"Remove and reposition existing single timber door",unit:"No",qty:1.0,rate:650.0,amt:650.0},
+  {bill:"1",itemNo:"7",desc:"Existing rwdp catch pit repositioned",unit:"No",qty:1.0,rate:1250.0,amt:1250.0},
+  {bill:"1",itemNo:"",desc:"Bricking up and making good",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"1",itemNo:"8",desc:"Brickup openings",unit:"m\u00B2",qty:3.0,rate:950.0,amt:2850.0},
+  {bill:"1",itemNo:"",desc:"Make good existing walls",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"1",itemNo:"9",desc:"Making good existing walls including painting (skim and paint) - downstairs area only",unit:"m\u00B2",qty:567.0,rate:150.0,amt:85050.0},
+  {bill:"1",itemNo:"10",desc:"Allowance for making good existing staircase",unit:"m\u00B2",qty:9.0,rate:250.0,amt:2250.0},
+  {bill:"1",itemNo:"11",desc:"Allowance for new floor finishes to existing staircase (R 200/m2 PC for tiling)",unit:"m\u00B2",qty:15.0,rate:490.0,amt:7350.0},
+  {bill:"1",itemNo:"12",desc:"Provision for repairs to cracks across site",unit:"sum",qty:1.0,rate:15000.0,amt:15000.0},
+  {bill:"1",itemNo:"",desc:"Expose existing foundations",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"1",itemNo:"13",desc:"Existing foundation to be exposed and dimensions measured. including making good once work/measuring is finished",unit:"m\u00B3",qty:2.0,rate:550.0,amt:1100.0},
+  {bill:"1",itemNo:"",desc:"Drill and dowel new slab to existing",unit:"",qty:null,rate:null,amt:null,isHeading:true},
+  {bill:"1",itemNo:"14",desc:"Drill and dowel chemical anchors into existing suspended slab to Engineer\'s details",unit:"m",qty:19.0,rate:1500.0,amt:28500.0}
+];
+
+const billNames={"01":"Preliminaries & General","1":"Alterations","2":"Earthworks","3":"Concrete, Formwork & Reinforcement","4":"Masonry","5":"Waterproofing","6":"Carpentry & Joinery","7":"Ceilings & Partitions","8":"Floor Coverings","9":"Plastering","10":"Tiling","11":"Plumbing & Drainage","12":"Paintwork","13":"Subcontract Packages","14":"Provisional Sums","EW-1":"Walkways, Paving & Kerbing","EW-2":"Stormwater Drainage"};
+const billTotals={"01":604500,"1":173742.50,"2":36922,"3":345110.64,"4":380507.80,"5":7400,"6":39365.80,"7":215422.90,"8":98000,"9":293031,"10":40880,"11":51450,"12":187429.10,"13":1352182.06,"14":175000,"EW-1":9620,"EW-2":33013.44};
+const collapsedBills=new Set();
+function Rf(n){if(n==null||n===0)return'\u2014';return'R '+n.toLocaleString('en-ZA',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+// Below-the-line items — Original and Revised
+const belowLineItemsOrig = [
+  {desc:"Sound Installation",amt:200000},
+  {desc:"Air Conditioning",amt:150000},
+  {desc:"Chairs",amt:100000},
+  {desc:"Kitchen Counter & Fitout",amt:100000},
+  {desc:"Coffee Machine",amt:30000},
+  {desc:"Fridges",amt:20000},
+  {desc:"Doors (existing downstairs)",amt:50000}
+];
+const belowLineItemsRev = [
+  {desc:"Sound Installation",amt:200000},
+  {desc:"Air Conditioning",amt:150000},
+  {desc:"Chairs",amt:100000},
+  {desc:"Kitchen Counter & Fitout",amt:100000},
+  {desc:"Coffee Machine",amt:30000},
+  {desc:"Fridges",amt:20000},
+  {desc:"Doors (existing downstairs)",amt:30000}
+];
+const belowLineTotalOrig = 650000;
+const belowLineTotalRev = 630000;
+// Keep legacy reference for renderBOQ
+const belowLineItems = belowLineItemsRev;
+const belowLineTotal = belowLineTotalRev;
+
+// REVISED VS ORIGINAL — LINE-BY-LINE FULL BOQ COMPARISON (Re-extracted 24 Mar 2026)
+const boqComparison = [
+  {bill:"01",isHeading:true,desc:"PRELIMINARIES"},
+  {bill:"01",itemNo:"1",desc:"Establishment",unit:"Item",qty:1.0,origRate:85000.0,origAmt:85000.0,revRate:76500.0,revAmt:76500.0,saving:8500.0},
+  {bill:"01",itemNo:"2",desc:"Site Preliminaries and office overheads + QS measure sched of quants",unit:"Mnths",qty:6.0,origRate:85000.0,origAmt:510000.0,revRate:76500.0,revAmt:459000.0,saving:51000.0},
+  {bill:"01",itemNo:"2",desc:"Contract Works Insurances--Existing Building-- Excluded   CLIENT TO DO",unit:"Item",qty:null,origRate:null,origAmt:0,revRate:null,revAmt:0,saving:0},
+  {bill:"01",itemNo:"3",desc:"Public Liability Insurances  By Builder",unit:"Item",qty:1.0,origRate:3500.0,origAmt:3500.0,revRate:3500.0,revAmt:3500.0,saving:0.0},
+  {bill:"01",itemNo:"4",desc:"Site Toilets",unit:"Mnths",qty:6.0,origRate:1000.0,origAmt:6000.0,revRate:1000.0,revAmt:6000.0,saving:0.0},
+  {bill:"1",isHeading:true,desc:"ALTERATIONS"},
+  {bill:"1",isHeading:true,desc:"Breaking up and removing"},
+  {bill:"1",itemNo:"1",desc:"Break/demolish existing columns/piers and cart away",unit:"No",qty:4.0,origRate:850.0,origAmt:3400.0,revRate:850.0,revAmt:3400.0,saving:0.0},
+  {bill:"1",itemNo:"2",desc:"Break existing surface bed (100mm thick assumed)",unit:"m\u00B2",qty:10.65,origRate:1750.0,origAmt:18637.5,revRate:1058.13,revAmt:11269.08,saving:7368.42},
+  {bill:"1",isHeading:true,desc:"Demolishing and carting away"},
+  {bill:"1",itemNo:"3",desc:"Planter wall",unit:"m",qty:7.0,origRate:175.0,origAmt:1225.0,revRate:175.0,revAmt:1225.0,saving:0.0},
+  {bill:"1",itemNo:"4",desc:"Demolish existing Staircase",unit:"m\u00B2",qty:6.0,origRate:450.0,origAmt:2700.0,revRate:450.0,revAmt:2700.0,saving:0.0},
+  {bill:"1",isHeading:true,desc:"Taking down and removing"},
+  {bill:"1",itemNo:"5",desc:"Demolish existing walls and cartaway",unit:"m\u00B2",qty:21.0,origRate:180.0,origAmt:3780.0,revRate:180.0,revAmt:3780.0,saving:0.0},
+  {bill:"1",itemNo:"6",desc:"Remove and reposition existing single timber door",unit:"No",qty:1.0,origRate:650.0,origAmt:650.0,revRate:650.0,revAmt:650.0,saving:0.0},
+  {bill:"1",itemNo:"7",desc:"Existing rwdp catch pit repositioned",unit:"No",qty:1.0,origRate:1250.0,origAmt:1250.0,revRate:1250.0,revAmt:1250.0,saving:0.0},
+  {bill:"1",isHeading:true,desc:"Bricking up and making good"},
+  {bill:"1",itemNo:"8",desc:"Brickup openings",unit:"m\u00B2",qty:3.0,origRate:950.0,origAmt:2850.0,revRate:513.71,revAmt:1541.13,saving:1308.87},
+  {bill:"1",isHeading:true,desc:"Make good existing walls"},
+  {bill:"1",itemNo:"9",desc:"Making good existing walls including painting (skim and paint) - downstairs area only",unit:"m\u00B2",qty:567.0,origRate:150.0,origAmt:85050.0,revRate:75.0,revAmt:42525.0,saving:42525.0},
+  {bill:"1",itemNo:"10",desc:"Allowance for making good existing staircase",unit:"m\u00B2",qty:9.0,origRate:250.0,origAmt:2250.0,revRate:250.0,revAmt:2250.0,saving:0.0},
+  {bill:"1",itemNo:"11",desc:"Allowance for new floor finishes to existing staircase (R 200/m2 PC for tiling)",unit:"m\u00B2",qty:15.0,origRate:490.0,origAmt:7350.0,revRate:490.0,revAmt:7350.0,saving:0.0},
+  {bill:"1",itemNo:"12",desc:"Provision for repairs to cracks across site",unit:"sum",qty:1.0,origRate:15000.0,origAmt:15000.0,revRate:15000.0,revAmt:15000.0,saving:0.0},
+  {bill:"1",isHeading:true,desc:"Expose existing foundations"},
+  {bill:"1",itemNo:"13",desc:"Existing foundation to be exposed and dimensions measured. including making good once work/measuring is finished",unit:"m\u00B3",qty:2.0,origRate:550.0,origAmt:1100.0,revRate:550.0,revAmt:1100.0,saving:0.0},
+  {bill:"1",isHeading:true,desc:"Drill and dowel new slab to existing"},
+  {bill:"1",itemNo:"14",desc:"Drill and dowel chemical anchors into existing suspended slab to Engineer's details",unit:"m",qty:19.0,origRate:1500.0,origAmt:28500.0,revRate:1500.0,revAmt:28500.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"EARTHWORKS, ETC."},
+  {bill:"2",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"2",isHeading:true,desc:"EXCAVATION"},
+  {bill:"2",isHeading:true,desc:"Excavation in earth not exceeding 2m deep"},
+  {bill:"2",itemNo:"1",desc:"Excavate for ground beams and pads",unit:"m\u00B3",qty:39.0,origRate:110.0,origAmt:4290.0,revRate:110.0,revAmt:4290.0,saving:0.0},
+  {bill:"2",itemNo:"2",desc:"Reduce levels under surface beds",unit:"m\u00B3",qty:21.0,origRate:100.0,origAmt:2100.0,revRate:100.0,revAmt:2100.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"Excavate back from the vertical face of excavations to the extent required for the insertion and removal of formwork and afterwards return, fill in and ram."},
+  {bill:"2",itemNo:"3",desc:"Excavate back from the face of ground beam excavations exceeding 500 mm and not exceeding 1,5 m deep and 300 mm between the structure and the sides to be excavated back.",unit:"m\u00B2",qty:4.0,origRate:110.0,origAmt:440.0,revRate:110.0,revAmt:440.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"Risk of collapse of excavations other than bulk:"},
+  {bill:"2",itemNo:"4",desc:"Sides of trench and hole excavations not exceeding 1,5m deep",unit:"m\u00B2",qty:76.0,origRate:10.0,origAmt:760.0,revRate:10.0,revAmt:760.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"CARTING AWAY."},
+  {bill:"2",isHeading:true,desc:"Extra over all excavations for loading, carting and dumping surplus excavated material (no allowance made for increase in bulk):"},
+  {bill:"2",itemNo:"5",desc:"Off site to a dumping site to be found by the Contractor",unit:"m\u00B3",qty:15.0,origRate:150.0,origAmt:2250.0,revRate:150.0,revAmt:2250.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"EARTH FILLING, ETC."},
+  {bill:"2",isHeading:true,desc:"Compaction of in situ surfaces:"},
+  {bill:"2",itemNo:"6",desc:"Rip and recompact ground surface, including scarifying for a depth of 150mm, breaking down oversize material, adding suitable material where necessary and compacting to 90% modified AASHTO density and trim to required levels.",unit:"m\u00B2",qty:105.0,origRate:50.0,origAmt:5250.0,revRate:50.0,revAmt:5250.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"Filling with material from the excavations compacted to a density of at least 95% Mod. AASHTO maximum density:"},
+  {bill:"2",itemNo:"7",desc:"Backfilling to trenches, holes, etc.",unit:"m\u00B3",qty:23.0,origRate:90.0,origAmt:2070.0,revRate:90.0,revAmt:2070.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"Filling with approved material G5 quality supplied and carted onto site by Contractor, compacted to a density of at least 98% Mod. AASHTO maximum density:"},
+  {bill:"2",itemNo:"8",desc:"Under surface beds",unit:"m\u00B3",qty:11.0,origRate:850.0,origAmt:9350.0,revRate:700.0,revAmt:7700.0,saving:1650.0},
+  {bill:"2",itemNo:"9",desc:"Under ground beams/footings and pads",unit:"m\u00B3",qty:5.0,origRate:850.0,origAmt:4250.0,revRate:700.0,revAmt:3500.0,saving:750.0},
+  {bill:"2",isHeading:true,desc:"KEEPING EXCAVATIONS FREE OF WATER"},
+  {bill:"2",isHeading:true,desc:"Keeping excavations free of water"},
+  {bill:"2",itemNo:"10",desc:"Allow for keeping excavations free of water by hand or machinery.",unit:"Item",qty:1.0,origRate:2000.0,origAmt:2000.0,revRate:2000.0,revAmt:2000.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"TESTS"},
+  {bill:"2",isHeading:true,desc:"Prescribed density tests on filling:"},
+  {bill:"2",itemNo:"11",desc:"Modified AASHTO Density test",unit:"Item",qty:1.0,origRate:1000.0,origAmt:1000.0,revRate:1000.0,revAmt:1000.0,saving:0.0},
+  {bill:"2",isHeading:true,desc:"SOIL POISONING"},
+  {bill:"2",isHeading:true,desc:"Soil insecticide:"},
+  {bill:"2",itemNo:"12",desc:"Under floors and foundations etc. including forming and poisoning shallow furrows against foundation walls etc, filling in furrows and ramming",unit:"m\u00B2",qty:186.0,origRate:17.0,origAmt:3162.0,revRate:17.0,revAmt:3162.0,saving:0.0},
+  {bill:"3",isHeading:true,desc:"CONCRETE, FORMWORK AND REINFORCEMENT"},
+  {bill:"3",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"3",isHeading:true,desc:"UNREINFORCED CONCRETE"},
+  {bill:"3",isHeading:true,desc:"15MPa/19mm concrete"},
+  {bill:"3",itemNo:"1",desc:"Surface blinding",unit:"m\u00B3",qty:2.0,origRate:1800.0,origAmt:3600.0,revRate:1441.860465116279,revAmt:2883.72,saving:716.28},
+  {bill:"3",isHeading:true,desc:"REINFORCED CONCRETE CAST AGAINST EXCAVATED SURFACES"},
+  {bill:"3",isHeading:true,desc:"25Mpa/19mm concrete"},
+  {bill:"3",itemNo:"2",desc:"Ground beams",unit:"m\u00B3",qty:9.0,origRate:2050.0,origAmt:18450.0,revRate:1674.418604651163,revAmt:15069.77,saving:3380.23},
+  {bill:"3",itemNo:"3",desc:"Concrete pads",unit:"m\u00B3",qty:2.0,origRate:2050.0,origAmt:4100.0,revRate:1674.418604651163,revAmt:3348.84,saving:751.16},
+  {bill:"3",isHeading:true,desc:"REINFORCED CONCRETE"},
+  {bill:"3",isHeading:true,desc:"30Mpa/19mm concrete"},
+  {bill:"3",itemNo:"4",desc:"Surface beds",unit:"m\u00B3",qty:11.0,origRate:2200.0,origAmt:24200.0,revRate:1906.9767441860465,revAmt:20976.74,saving:3223.26},
+  {bill:"3",itemNo:"5",desc:"Columns, stiffener piers and infill to brick pier",unit:"m\u00B3",qty:4.6632,origRate:2200.0,origAmt:10259.04,revRate:1906.9767441860465,revAmt:8892.61,saving:1366.43},
+  {bill:"3",itemNo:"6",desc:"Beams",unit:"m\u00B3",qty:7.0,origRate:2200.0,origAmt:15400.0,revRate:1906.9767441860465,revAmt:13348.84,saving:2051.16},
+  {bill:"3",itemNo:"7",desc:"Slabs and inverted beams",unit:"m\u00B3",qty:23.0,origRate:2200.0,origAmt:50600.0,revRate:1906.9767441860465,revAmt:43860.47,saving:6739.53},
+  {bill:"3",isHeading:true,desc:"CONCRETE SUNDRIES"},
+  {bill:"3",isHeading:true,desc:"Test Cubes"},
+  {bill:"3",itemNo:"8",desc:"Making and testing set of three 150 x150 x 150mm concrete strength test cubes",unit:"No",qty:12.0,origRate:165.0,origAmt:1980.0,revRate:165.0,revAmt:1980.0,saving:0.0},
+  {bill:"3",isHeading:true,desc:"Finishing top surfaces of concrete smooth with a steel float"},
+  {bill:"3",itemNo:"9",desc:"to top of slabs",unit:"m\u00B2",qty:93.0,origRate:20.0,origAmt:1860.0,revRate:20.0,revAmt:1860.0,saving:0.0},
+  {bill:"3",isHeading:true,desc:"Finishing top surfaces of concrete smooth with a wood float"},
+  {bill:"3",itemNo:"10",desc:"Surface beds, stair landings and treads etc",unit:"m\u00B2",qty:71.0,origRate:20.0,origAmt:1420.0,revRate:20.0,revAmt:1420.0,saving:0.0},
+  {bill:"3",isHeading:true,desc:"ROUGH FORMWORK"},
+  {bill:"3",isHeading:true,desc:"Rough formwork to sides"},
+  {bill:"3",itemNo:"11",desc:"Ground beams",unit:"m\u00B2",qty:24.0,origRate:250.0,origAmt:6000.0,revRate:250.0,revAmt:6000.0,saving:0.0},
+  {bill:"3",itemNo:"12",desc:"Pads",unit:"m\u00B2",qty:4.0,origRate:250.0,origAmt:1000.0,revRate:250.0,revAmt:1000.0,saving:0.0},
+  {bill:"3",itemNo:"13",desc:"Formwork to columns and stiffener piers with total height not exceeding 3.5m",unit:"m\u00B2",qty:53.94,origRate:350.0,origAmt:18879.0,revRate:350.0,revAmt:18879.0,saving:0.0},
+  {bill:"3",itemNo:"14",desc:"to edges n.e 300mm high, propped up not exceeding 3.5m",unit:"m",qty:49.0,origRate:130.0,origAmt:6370.0,revRate:130.0,revAmt:6370.0,saving:0.0},
+  {bill:"3",isHeading:true,desc:"Rough formwork to sides and soffits"},
+  {bill:"3",itemNo:"15",desc:"To isolated beams",unit:"m\u00B2",qty:68.0,origRate:450.0,origAmt:30600.0,revRate:375.0,revAmt:25500.0,saving:5100.0},
+  {bill:"3",isHeading:true,desc:"Rough formwork to soffits"},
+  {bill:"3",itemNo:"16",desc:"Slabs not exceeding 250mm thick propped up, exceeding 1.5m not exceeding 3.5m high from bearing level.",unit:"m\u00B2",qty:93.0,origRate:250.0,origAmt:23250.0,revRate:300.0,revAmt:27900.0,saving:-4650.0},
+  {bill:"3",isHeading:true,desc:"MOVEMENT JOINTS ETC"},
+  {bill:"3",isHeading:true,desc:"Movement joints with \"Jointex\" between vertical concrete and Construction Joints"},
+  {bill:"3",itemNo:"17",desc:"Isolation joint, 10mm jointex sealed with polysulphide sealant to manufacturer's specifiction",unit:"m",qty:41.0,origRate:40.0,origAmt:1640.0,revRate:40.0,revAmt:1640.0,saving:0.0},
+  {bill:"3",isHeading:true,desc:"Saw cut joints"},
+  {bill:"3",itemNo:"18",desc:"3 x 60mm Saw cut joints in top of concrete",unit:"m",qty:14.0,origRate:30.0,origAmt:420.0,revRate:30.0,revAmt:420.0,saving:0.0},
+  {bill:"3",isHeading:true,desc:"REINFORCEMENT (PROVISIONAL)"},
+  {bill:"3",isHeading:true,desc:"Mild steel reinforcement to structural concrete work"},
+  {bill:"3",itemNo:"19",desc:"Bars in various diameters ( assumed various kg/m3 as per Engineer)",unit:"t",qty:7.0028,origRate:17000.0,origAmt:119047.6,revRate:17000.0,revAmt:119047.6,saving:0.0},
+  {bill:"3",isHeading:true,desc:"Fabric reinforcement to surface beds only"},
+  {bill:"3",itemNo:"20",desc:"Type 254 fabric reinforcement in concrete surface beds, slabs, etc",unit:"m\u00B2",qty:71.0,origRate:85.0,origAmt:6035.0,revRate:85.0,revAmt:6035.0,saving:0.0},
+  {bill:"4",isHeading:true,desc:"MASONRY"},
+  {bill:"4",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"4",isHeading:true,desc:"SUBSTRUCTURE"},
+  {bill:"4",isHeading:true,desc:"14 Mpa Clay Maxi bricks"},
+  {bill:"4",itemNo:"1",desc:"230mm walls",unit:"m\u00B2",qty:22.0,origRate:630.0,origAmt:13860.0,revRate:630.0,revAmt:13860.0,saving:0.0},
+  {bill:"4",isHeading:true,desc:"SUPERSTRUCTURE"},
+  {bill:"4",isHeading:true,desc:"7 Mpa Clay Maxi bricks"},
+  {bill:"4",itemNo:"2",desc:"115mm  walls",unit:"m\u00B2",qty:100.0,origRate:315.0,origAmt:31500.0,revRate:315.0,revAmt:31500.0,saving:0.0},
+  {bill:"4",itemNo:"3",desc:"115mm  in beam filling",unit:"m\u00B2",qty:12.0,origRate:315.0,origAmt:3780.0,revRate:315.0,revAmt:3780.0,saving:0.0},
+  {bill:"4",itemNo:"4",desc:"260mm walls (including areas where existing brickwork is raised)",unit:"m\u00B2",qty:437.0,origRate:630.0,origAmt:275310.0,revRate:630.0,revAmt:275310.0,saving:0.0},
+  {bill:"4",itemNo:"5",desc:"Feature signage wall (brick pier)",unit:"m\u00B2",qty:21.6,origRate:630.0,origAmt:13608.0,revRate:630.0,revAmt:0,saving:13608.0},
+  {bill:"4",itemNo:"6",desc:"Piers, 270 x 230mm wide, in common brickwork (above concrete rafter beam)",unit:"No",qty:12.0,origRate:375.0,origAmt:4500.0,revRate:375.0,revAmt:4500.0,saving:0.0},
+  {bill:"4",isHeading:true,desc:"Brickwork reinforcement"},
+  {bill:"4",itemNo:"7",desc:"75mm Wide reinforcement built in horizontally",unit:"m",qty:336.0,origRate:4.0,origAmt:1344.0,revRate:4.0,revAmt:1344.0,saving:0.0},
+  {bill:"4",itemNo:"8",desc:"150mm Wide reinforcement built in horizontally",unit:"m",qty:1375.8000000000002,origRate:6.0,origAmt:8254.8,revRate:6.0,revAmt:8254.8,saving:-0.0},
+  {bill:"4",isHeading:true,desc:"Prestressed fabricated lintels"},
+  {bill:"4",itemNo:"9",desc:"110 x 70mm Lintels in lengths not exceeding 3m",unit:"m",qty:164.0,origRate:75.0,origAmt:12300.0,revRate:75.0,revAmt:12300.0,saving:0.0},
+  {bill:"4",isHeading:true,desc:"Brickwork sundries"},
+  {bill:"4",itemNo:"10",desc:"Brixeal bituminous compound emulsion paint to walls",unit:"m\u00B2",qty:458.6,origRate:35.0,origAmt:16051.0,revRate:35.0,revAmt:16051.0,saving:0.0},
+  {bill:"5",isHeading:true,desc:"WATERPROOFING"},
+  {bill:"5",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"5",isHeading:true,desc:"DAMP PROOFING OF WALLS AND FLOORS"},
+  {bill:"5",isHeading:true,desc:"Gundle\u00AE API Brikgrip\u00AE DPC 250um' damp proof course (SANS 952-12011):"},
+  {bill:"5",itemNo:"1",desc:"On walls, stepped up in cavities, under cills, etc.",unit:"m\u00B2",qty:38.0,origRate:120.0,origAmt:4560.0,revRate:51.48,revAmt:1956.24,saving:2603.76},
+  {bill:"5",isHeading:true,desc:"'Gundle\u00AE API A.T USB Green' 375um membrane to SANS 952-1:2011 laid with minimum 150mm overlaps and sealed with 'Gunplas\u00AE' pressure sensitive tape:"},
+  {bill:"5",itemNo:"2",desc:"Under surface bed",unit:"m\u00B2",qty:71.0,origRate:40.0,origAmt:2840.0,revRate:18.9,revAmt:1341.9,saving:1498.1},
+  {bill:"6",isHeading:true,desc:"CARPENTRY AND JOINERY"},
+  {bill:"6",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"6",isHeading:true,desc:"TIMBER DOORS ETC."},
+  {bill:"6",isHeading:true,desc:"Internal doors to Architect's specification"},
+  {bill:"6",itemNo:"1",desc:"D04- Internal door - Flush Panel semi solid internal door and installation complete",unit:"No",qty:1.0,origRate:1180.0,origAmt:1180.0,revRate:1180.0,revAmt:1180.0,saving:0.0},
+  {bill:"6",itemNo:"2",desc:"D06-Internal door - Flush Panel semi solid internal door and installation complete",unit:"No",qty:1.0,origRate:1180.0,origAmt:1180.0,revRate:1180.0,revAmt:1180.0,saving:0.0},
+  {bill:"6",itemNo:"3",desc:"D07- Internal door",unit:"No",qty:1.0,origRate:1180.0,origAmt:1180.0,revRate:1180.0,revAmt:1180.0,saving:0.0},
+  {bill:"6",itemNo:"4",desc:"D08- Internal door",unit:"No",qty:1.0,origRate:1180.0,origAmt:1180.0,revRate:1180.0,revAmt:1180.0,saving:0.0},
+  {bill:"6",itemNo:"5",desc:"D09-Internal door",unit:"No",qty:1.0,origRate:1180.0,origAmt:1180.0,revRate:1180.0,revAmt:1180.0,saving:0.0},
+  {bill:"6",itemNo:"6",desc:"D10- Internal door",unit:"No",qty:1.0,origRate:1180.0,origAmt:1180.0,revRate:1180.0,revAmt:1180.0,saving:0.0},
+  {bill:"6",isHeading:true,desc:"External doors to Architect's specification"},
+  {bill:"6",itemNo:"7",desc:"D12- Solid external door and installation complete",unit:"No",qty:1.0,origRate:4000.0,origAmt:4000.0,revRate:4000.0,revAmt:4000.0,saving:0.0},
+  {bill:"6",isHeading:true,desc:"Frames"},
+  {bill:"6",itemNo:"8",desc:"Internal single door frame installed complete including priming of back of frames",unit:"No",qty:6.0,origRate:1414.3,origAmt:8485.8,revRate:1315.0,revAmt:7890.0,saving:595.8},
+  {bill:"6",itemNo:"9",desc:"External single door frame installed complete including priming of back of frames",unit:"No",qty:1.0,origRate:2200.0,origAmt:2200.0,revRate:2200.0,revAmt:2200.0,saving:0.0},
+  {bill:"6",isHeading:true,desc:"Skirtings"},
+  {bill:"6",itemNo:"10",desc:"Allowance for Skirtings (PC rate R 45/m ex vat). Supply and install complete",unit:"m",qty:220.0,origRate:80.0,origAmt:17600.0,revRate:75.0,revAmt:16500.0,saving:1100.0},
+  {bill:"7",isHeading:true,desc:"CEILINGS AND PARTITIONS"},
+  {bill:"7",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"7",isHeading:true,desc:"SUSPENDED CEILINGS"},
+  {bill:"7",isHeading:true,desc:"9.5mm gypsum plasterboard ceiling inclusive of all substructure"},
+  {bill:"7",itemNo:"1",desc:"Internal ceilings",unit:"m\u00B2",qty:143.0,origRate:305.0,origAmt:43615.0,revRate:285.0,revAmt:40755.0,saving:2860.0},
+  {bill:"7",itemNo:"2",desc:"Extra over ceiling for 1000 x 1000mm trap door",unit:"No",qty:2.0,origRate:1550.0,origAmt:3100.0,revRate:1550.0,revAmt:3100.0,saving:0.0},
+  {bill:"7",isHeading:true,desc:"RAKED CEILINGS"},
+  {bill:"7",isHeading:true,desc:"9.5mm gypsum plasterboard ceiling"},
+  {bill:"7",itemNo:"3",desc:"Internal ceilings",unit:"m\u00B2",qty:222.20000000000002,origRate:350.0,origAmt:77770.0,revRate:315.0,revAmt:69993.0,saving:7777.0},
+  {bill:"7",isHeading:true,desc:"EAVES CEILINGS"},
+  {bill:"7",isHeading:true,desc:"Nutec ceilings to eaves"},
+  {bill:"7",itemNo:"4",desc:"To eaves",unit:"m\u00B2",qty:44.1,origRate:380.0,origAmt:16758.0,revRate:345.0,revAmt:15214.5,saving:1543.5},
+  {bill:"7",isHeading:true,desc:"CORNICES ETC"},
+  {bill:"7",isHeading:true,desc:"Shadowline cornices"},
+  {bill:"7",itemNo:"5",desc:"20mm Shadowline cornice",unit:"m",qty:242.0,origRate:95.0,origAmt:22990.0,revRate:70.0,revAmt:16940.0,saving:6050.0},
+  {bill:"7",itemNo:"6",desc:"Wall angle to external eaves installation",unit:"m",qty:72.0,origRate:55.0,origAmt:3960.0,revRate:55.0,revAmt:3960.0,saving:0.0},
+  {bill:"7",isHeading:true,desc:"Insulation to ceilings"},
+  {bill:"7",itemNo:"7",desc:"Insulation to Architect specification",unit:"m\u00B2",qty:383.46000000000004,origRate:105.0,origAmt:40263.3,revRate:95.0,revAmt:36428.7,saving:3834.6},
+  {bill:"7",isHeading:true,desc:"PARTITIONS ETC"},
+  {bill:"7",isHeading:true,desc:"DRYWALL PARTITIONS"},
+  {bill:"7",isHeading:true,desc:"Partitions with 12.5mm Gypsum plasterboard on both sides"},
+  {bill:"7",itemNo:"8",desc:"Partitions 3000mm high with bottom and top tracks plugged",unit:"m",qty:4.0,origRate:1741.65,origAmt:6966.6,revRate:1650.0,revAmt:6600.0,saving:366.6},
+  {bill:"8",isHeading:true,desc:"FLOOR COVERINGS"},
+  {bill:"8",isHeading:true,desc:"Berber point 650 - 50cmx50cm Carpet tiles"},
+  {bill:"8",itemNo:"1",desc:"To internal floors",unit:"m\u00B2",qty:261.0,origRate:375.47892720306515,origAmt:98000.0,revRate:375.47892720306515,revAmt:98000.0,saving:0.0},
+  {bill:"9",isHeading:true,desc:"PLASTERING"},
+  {bill:"9",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"9",isHeading:true,desc:"SUPPLEMENTARY PREAMBLES"},
+  {bill:"9",isHeading:true,desc:"INTERNAL PLASTER"},
+  {bill:"9",isHeading:true,desc:"Cement plaster on brickwork"},
+  {bill:"9",itemNo:"1",desc:"On walls",unit:"m\u00B2",qty:651.7,origRate:100.0,origAmt:65170.0,revRate:100.0,revAmt:65170.0,saving:-0.0},
+  {bill:"9",itemNo:"2",desc:"Narrow widths",unit:"m\u00B2",qty:65.17,origRate:150.0,origAmt:9775.5,revRate:150.0,revAmt:9775.5,saving:0.0},
+  {bill:"9",isHeading:true,desc:"EXTERNAL PLASTER"},
+  {bill:"9",isHeading:true,desc:"Cement plaster on brickwork"},
+  {bill:"9",itemNo:"3",desc:"On walls",unit:"m\u00B2",qty:441.7,origRate:100.0,origAmt:44170.0,revRate:100.0,revAmt:44170.0,saving:0.0},
+  {bill:"9",itemNo:"4",desc:"To existing facebrick walls",unit:"m\u00B2",qty:309.0,origRate:100.0,origAmt:30900.0,revRate:100.0,revAmt:30900.0,saving:0.0},
+  {bill:"9",itemNo:"5",desc:"Narrow widths",unit:"m\u00B2",qty:44.17,origRate:150.0,origAmt:6625.5,revRate:150.0,revAmt:6625.5,saving:0.0},
+  {bill:"9",isHeading:true,desc:"Extra over for Feature plaster finish"},
+  {bill:"9",itemNo:"6",desc:"Feature plaster",unit:"m\u00B2",qty:7.0,origRate:250.0,origAmt:1750.0,revRate:250.0,revAmt:1750.0,saving:0.0},
+  {bill:"9",isHeading:true,desc:"CONCRETE SURFACES"},
+  {bill:"9",isHeading:true,desc:"Cement plaster on concrete surfaces"},
+  {bill:"9",itemNo:"7",desc:"Beams",unit:"m\u00B2",qty:68.0,origRate:150.0,origAmt:10200.0,revRate:150.0,revAmt:10200.0,saving:0.0},
+  {bill:"9",itemNo:"8",desc:"Columns and stiffeners",unit:"m\u00B2",qty:49.0,origRate:150.0,origAmt:7350.0,revRate:150.0,revAmt:7350.0,saving:0.0},
+  {bill:"9",itemNo:"9",desc:"Soffits of slabs",unit:"m\u00B2",qty:93.0,origRate:100.0,origAmt:9300.0,revRate:100.0,revAmt:9300.0,saving:0.0},
+  {bill:"9",isHeading:true,desc:"SCREEDS"},
+  {bill:"9",isHeading:true,desc:"Screeds on concrete"},
+  {bill:"9",itemNo:"10",desc:"40mm Thick on floors",unit:"m\u00B2",qty:441.0,origRate:130.0,origAmt:57330.0,revRate:110.0,revAmt:48510.0,saving:8820.0},
+  {bill:"9",itemNo:"11",desc:"Decorated/Self levelling screed",unit:"m\u00B2",qty:87.0,origRate:580.0,origAmt:50460.0,revRate:580.0,revAmt:50460.0,saving:0.0},
+  {bill:"10",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"10",isHeading:true,desc:"FLOOR TILING"},
+  {bill:"10",isHeading:true,desc:"PC Allowance for Tile @ R250/m2"},
+  {bill:"10",itemNo:"1",desc:"To internal floors",unit:"m\u00B2",qty:73.0,origRate:560.0,origAmt:40880.0,revRate:525.0,revAmt:38325.0,saving:2555.0},
+  {bill:"11",isHeading:true,desc:"PLUMBING AND DRAINAGE"},
+  {bill:"11",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"11",isHeading:true,desc:"FIRST AND SECOND FIX PLUMBING"},
+  {bill:"11",isHeading:true,desc:"Wash Hand Basins (WHB)"},
+  {bill:"11",itemNo:"1",desc:"First and Second fix plumbing (WHB)",unit:"No",qty:1.0,origRate:4150.0,origAmt:4150.0,revRate:4150.0,revAmt:4150.0,saving:0.0},
+  {bill:"11",isHeading:true,desc:"Toilets (WC)"},
+  {bill:"11",itemNo:"2",desc:"First and Second fix plumbing (WC)",unit:"No",qty:1.0,origRate:4350.0,origAmt:4350.0,revRate:4350.0,revAmt:4350.0,saving:0.0},
+  {bill:"11",isHeading:true,desc:"Sink"},
+  {bill:"11",itemNo:"3",desc:"First and Second fix plumbing (Sink)",unit:"No",qty:1.0,origRate:4150.0,origAmt:4150.0,revRate:4150.0,revAmt:4150.0,saving:0.0},
+  {bill:"11",isHeading:true,desc:"Prep bowl"},
+  {bill:"11",itemNo:"4",desc:"First and Second fix plumbing (Prep bowl)",unit:"No",qty:1.0,origRate:4150.0,origAmt:4150.0,revRate:4150.0,revAmt:4150.0,saving:0.0},
+  {bill:"11",isHeading:true,desc:"Geysers"},
+  {bill:"11",itemNo:"4",desc:"First and Second fix plumbing (Geyser)",unit:"No",qty:1.0,origRate:4150.0,origAmt:4150.0,revRate:4150.0,revAmt:4150.0,saving:0.0},
+  {bill:"11",itemNo:"5",desc:"General plumbing allowance including connection to existing system",unit:"Item",qty:1.0,origRate:30500.0,origAmt:30500.0,revRate:15000.0,revAmt:15000.0,saving:15500.0},
+  {bill:"12",isHeading:true,desc:"PAINTWORK"},
+  {bill:"12",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"12",isHeading:true,desc:"FLOATED PLASTER SURFACES"},
+  {bill:"12",isHeading:true,desc:"Plascon Wall and All"},
+  {bill:"12",itemNo:"1",desc:"Internal walls",unit:"m\u00B2",qty:651.7,origRate:80.0,origAmt:52136.0,revRate:75.0,revAmt:48877.5,saving:3258.5},
+  {bill:"12",itemNo:"2",desc:"Narrow widths",unit:"m\u00B2",qty:65.17,origRate:150.0,origAmt:9775.5,revRate:150.0,revAmt:9775.5,saving:0.0},
+  {bill:"12",isHeading:true,desc:"FLOATED PLASTERED CONCRETE SURFACES"},
+  {bill:"12",isHeading:true,desc:"Plascon Wall and All"},
+  {bill:"12",itemNo:"3",desc:"Beams",unit:"m\u00B2",qty:68.0,origRate:80.0,origAmt:5440.0,revRate:75.0,revAmt:5100.0,saving:340.0},
+  {bill:"12",itemNo:"4",desc:"Columns",unit:"m\u00B2",qty:46.0,origRate:80.0,origAmt:3680.0,revRate:75.0,revAmt:3450.0,saving:230.0},
+  {bill:"12",itemNo:"5",desc:"Soffits",unit:"m\u00B2",qty:93.0,origRate:80.0,origAmt:7440.0,revRate:80.0,revAmt:7440.0,saving:0.0},
+  {bill:"12",isHeading:true,desc:"External painting"},
+  {bill:"12",itemNo:"5",desc:"External walls",unit:"m\u00B2",qty:757.7,origRate:80.0,origAmt:60616.0,revRate:75.0,revAmt:56827.5,saving:3788.5},
+  {bill:"12",itemNo:"6",desc:"Narrow widths",unit:"m\u00B2",qty:44.17,origRate:80.0,origAmt:3533.6,revRate:80.0,revAmt:3533.6,saving:-0.0},
+  {bill:"12",isHeading:true,desc:"WOOD SURFACES"},
+  {bill:"12",isHeading:true,desc:"Enamel paint on"},
+  {bill:"12",itemNo:"7",desc:"Doors",unit:"m\u00B2",qty:34.0,origRate:120.0,origAmt:4080.0,revRate:95.0,revAmt:3230.0,saving:850.0},
+  {bill:"12",itemNo:"8",desc:"Door frames, etc",unit:"m\u00B2",qty:4.0,origRate:100.0,origAmt:400.0,revRate:95.0,revAmt:380.0,saving:20.0},
+  {bill:"12",itemNo:"9",desc:"Timber skirting",unit:"m",qty:220.0,origRate:25.0,origAmt:5500.0,revRate:25.0,revAmt:5500.0,saving:0.0},
+  {bill:"12",isHeading:true,desc:"ON PLASTER BOARD"},
+  {bill:"12",isHeading:true,desc:"Plascon Wall and All"},
+  {bill:"12",itemNo:"10",desc:"On ceilings and cornices externally",unit:"m\u00B2",qty:365.20000000000005,origRate:80.0,origAmt:29216.0,revRate:80.0,revAmt:29216.0,saving:-0.0},
+  {bill:"12",itemNo:"11",desc:"To Nutec ceilings externally",unit:"m\u00B2",qty:44.1,origRate:120.0,origAmt:5292.0,revRate:90.0,revAmt:3969.0,saving:1323.0},
+  {bill:"12",itemNo:"12",desc:"Partitions",unit:"m\u00B2",qty:4.0,origRate:80.0,origAmt:320.0,revRate:75.0,revAmt:300.0,saving:20.0},
+  {bill:"13",isHeading:true,desc:"SUBCONTRACT PACKAGES"},
+  {bill:"13",isHeading:true,desc:"ELECTRICAL INSTALLATION"},
+  {bill:"13",itemNo:"1a",desc:"Electrical installation",unit:"Item",qty:1.0,origRate:287405.0,origAmt:287405.0,revRate:287405.0,revAmt:287405.0,saving:0.0},
+  {bill:"13",itemNo:"1b",desc:"Three phase Upgrade - Optional",unit:"Item",qty:1.0,origRate:46400.0,origAmt:46400.0,revRate:46400.0,revAmt:46400.0,saving:0.0},
+  {bill:"13",isHeading:true,desc:"TIMBER STAIRCASE AND TIMBER DECK"},
+  {bill:"13",itemNo:"2",desc:"Timber staircase and Timber deck construction",unit:"Item",qty:1.0,origRate:103655.0,origAmt:103655.0,revRate:103655.0,revAmt:103655.0,saving:0.0},
+  {bill:"13",isHeading:true,desc:"ALUMINIUM WINDOWS AND DOORS/LOUVRES"},
+  {bill:"13",itemNo:"3",desc:"Aluminium windows and doors",unit:"Item",qty:1.0,origRate:302123.93,origAmt:302123.93,revRate:302123.93,revAmt:302123.93,saving:0.0},
+  {bill:"13",isHeading:true,desc:"ROOF SUPPLY AND INSTALLATION"},
+  {bill:"13",itemNo:"4",desc:"Roof Supply and Installation",unit:"Item",qty:1.0,origRate:477690.6,origAmt:477690.6,revRate:477690.6,revAmt:477690.6,saving:0.0},
+  {bill:"13",isHeading:true,desc:"METAL PALISADE/GATE"},
+  {bill:"13",itemNo:"5",desc:"GMS screen and gate",unit:"Item",qty:1.0,origRate:38510.6,origAmt:38510.6,revRate:38510.6,revAmt:38510.6,saving:0.0},
+  {bill:"13",isHeading:true,desc:"BALUSTRADES"},
+  {bill:"13",itemNo:"6",desc:"Balustrades",unit:"Item",qty:1.0,origRate:17556.93,origAmt:17556.93,revRate:17556.93,revAmt:17556.93,saving:0.0},
+  {bill:"13",isHeading:true,desc:"RAINWATER GOODS"},
+  {bill:"13",itemNo:"7",desc:"Rainwater goods",unit:"Item",qty:1.0,origRate:29700.0,origAmt:29700.0,revRate:29700.0,revAmt:29700.0,saving:0.0},
+  {bill:"13",isHeading:true,desc:"TIMBER SCREEN"},
+  {bill:"13",itemNo:"8",desc:"Timber screen",unit:"Item",qty:1.0,origRate:49140.0,origAmt:49140.0,revRate:0.0,revAmt:0,saving:49140.0},
+  {bill:"14",isHeading:true,desc:"PROVISIONAL SUMS"},
+  {bill:"14",isHeading:true,desc:"IRONMONGERY"},
+  {bill:"14",itemNo:"1",desc:"Provisional allowance for Ironmongery of R 15,000 ex vat",unit:"Item",qty:1.0,origRate:15000.0,origAmt:15000.0,revRate:15000.0,revAmt:15000.0,saving:0.0},
+  {bill:"14",isHeading:true,desc:"LANDSCAPING"},
+  {bill:"14",itemNo:"2",desc:"Provisional Allowance for Landscaping of R 25,000 ex Vat",unit:"Item",qty:1.0,origRate:25000.0,origAmt:25000.0,revRate:25000.0,revAmt:25000.0,saving:0.0},
+  {bill:"14",isHeading:true,desc:"SANWARE/BRASSWARE/GEYSERS"},
+  {bill:"14",itemNo:"3",desc:"Provisional allowance for sanware/brass ware/geysers of R 30,000 ex Vat",unit:"Item",qty:1.0,origRate:30000.0,origAmt:30000.0,revRate:30000.0,revAmt:30000.0,saving:0.0},
+  {bill:"14",isHeading:true,desc:"MIRRORS AND BATHROOM ACCESSORIES"},
+  {bill:"14",itemNo:"4",desc:"Provisional allowance for bathroom accessories of R 5,000 ex vat",unit:"Item",qty:1.0,origRate:5000.0,origAmt:5000.0,revRate:5000.0,revAmt:5000.0,saving:0.0},
+  {bill:"14",isHeading:true,desc:"SIGNAGE"},
+  {bill:"14",itemNo:"5",desc:"Provisional allowance for Signage of R 10,000 ex vat",unit:"Item",qty:1.0,origRate:10000.0,origAmt:10000.0,revRate:10000.0,revAmt:10000.0,saving:0.0},
+  {bill:"14",isHeading:true,desc:"SEWER"},
+  {bill:"14",itemNo:"6",desc:"Provisional allowance for Sewer of R 15 000 ex vat",unit:"Item",qty:1.0,origRate:15000.0,origAmt:15000.0,revRate:15000.0,revAmt:15000.0,saving:0.0},
+  {bill:"14",isHeading:true,desc:"FEATURE WALL SIGNAGE"},
+  {bill:"14",itemNo:"7",desc:"Provisional allowance for feature wall signage of R 5 000 ex vat",unit:"Item",qty:1.0,origRate:5000.0,origAmt:5000.0,revRate:0.0,revAmt:0,saving:5000.0},
+  {bill:"14",isHeading:true,desc:"STAGE"},
+  {bill:"14",itemNo:"8",desc:"Provisional allowance for Stage of R 40 000 ex vat",unit:"Item",qty:1.0,origRate:40000.0,origAmt:40000.0,revRate:40000.0,revAmt:40000.0,saving:0.0},
+  {bill:"14",isHeading:true,desc:"JOINERY FOR SOUND AND MEDIA"},
+  {bill:"14",itemNo:"9",desc:"Provisional allowance for Joinery for sound and media of R 35 000 ex vat",unit:"Item",qty:1.0,origRate:30000.0,origAmt:30000.0,revRate:30000.0,revAmt:30000.0,saving:0.0},
+  {bill:"14",isHeading:true,desc:"KITCHEN COUNTER INSTALLATION"},
+  {bill:"14",itemNo:"10",desc:"Provisional allowance for Kitchen counter installation of R 100 000 ex vat",unit:"Item",qty:1.0,origRate:100000.0,origAmt:0,revRate:0.0,revAmt:0,saving:0},
+  {bill:"EW-1",isHeading:true,desc:"WALKWAYS"},
+  {bill:"EW-1",isHeading:true,desc:"For preambles see \"Model Preambles for Trades 2017\""},
+  {bill:"EW-1",isHeading:true,desc:"WALKWAY PAVING"},
+  {bill:"EW-1",isHeading:true,desc:"Site Clearance"},
+  {bill:"EW-1",itemNo:"1",desc:"Clear and grub within road reserve",unit:"m\u00B2",qty:12.0,origRate:15.0,origAmt:180.0,revRate:15.0,revAmt:180.0,saving:0.0},
+  {bill:"EW-1",isHeading:true,desc:"Excavations"},
+  {bill:"EW-1",itemNo:"2",desc:"Excavate to reduce levels for layer works installation",unit:"m\u00B3",qty:4.0,origRate:100.0,origAmt:400.0,revRate:100.0,revAmt:400.0,saving:0.0},
+  {bill:"EW-1",isHeading:true,desc:"Compaction"},
+  {bill:"EW-1",itemNo:"3",desc:"Rip and re-compact excavated surface to Minimum 93% of Mod. AASHTO density",unit:"m\u00B2",qty:12.0,origRate:40.0,origAmt:480.0,revRate:40.0,revAmt:480.0,saving:0.0},
+  {bill:"EW-1",isHeading:true,desc:"Filling"},
+  {bill:"EW-1",itemNo:"4",desc:"to walkway areas",unit:"m\u00B3",qty:2.0,origRate:750.0,origAmt:1500.0,revRate:750.0,revAmt:1500.0,saving:0.0},
+  {bill:"EW-1",isHeading:true,desc:"Bedding"},
+  {bill:"EW-1",itemNo:"6",desc:"20mm sand",unit:"m\u00B3",qty:1.0,origRate:700.0,origAmt:700.0,revRate:700.0,revAmt:700.0,saving:0.0},
+  {bill:"EW-1",isHeading:true,desc:"Concrete pavers"},
+  {bill:"EW-1",itemNo:"7",desc:"laid to architects detail on river sand - R 300/m2 ex vat PC",unit:"m\u00B2",qty:12.0,origRate:530.0,origAmt:6360.0,revRate:530.0,revAmt:6360.0,saving:0.0},
+  {bill:"EW-2",isHeading:true,desc:"STORMWATER"},
+  {bill:"EW-2",isHeading:true,desc:"Earthworks"},
+  {bill:"EW-2",itemNo:"1",desc:"Excavate for pipe trenches not exceeding 2m deep",unit:"m\u00B3",qty:27.746031746031743,origRate:100.0,origAmt:2774.6,revRate:100.0,revAmt:2774.6,saving:-0.0},
+  {bill:"EW-2",itemNo:"2",desc:"Backfilling to pipe trenches",unit:"m\u00B3",qty:12.412698412698411,origRate:110.0,origAmt:1365.4,revRate:110.0,revAmt:1365.4,saving:0.0},
+  {bill:"EW-2",itemNo:"3",desc:"Selected granular filling in bedding under and filling around pipes",unit:"m\u00B3",qty:6.571428571428571,origRate:100.0,origAmt:657.14,revRate:100.0,revAmt:657.14,saving:-0.0},
+  {bill:"EW-2",isHeading:true,desc:"UPVC storm water pipes"},
+  {bill:"EW-2",itemNo:"4",desc:"110mm UPVC pipes",unit:"m",qty:46.0,origRate:192.62,origAmt:8860.52,revRate:192.62,revAmt:8860.52,saving:0.0},
+  {bill:"EW-2",isHeading:true,desc:"Extra over 110mm pipes for:"},
+  {bill:"EW-2",itemNo:"5",desc:"Bends",unit:"No",qty:3.0,origRate:139.08,origAmt:417.24,revRate:139.08,revAmt:417.24,saving:0.0},
+  {bill:"EW-2",itemNo:"6",desc:"Junctions",unit:"No",qty:1.0,origRate:188.54,origAmt:188.54,revRate:188.54,revAmt:188.54,saving:0.0},
+  {bill:"EW-2",isHeading:true,desc:"Channels"},
+  {bill:"EW-2",itemNo:"7",desc:"Concrete stormwater channel",unit:"m",qty:17.0,origRate:750.0,origAmt:12750.0,revRate:750.0,revAmt:12750.0,saving:0.0},
+  {bill:"EW-2",isHeading:true,desc:"SUNDRIES"},
+  {bill:"EW-2",isHeading:true,desc:"Connections"},
+  {bill:"EW-2",itemNo:"8",desc:"Connect to existing services",unit:"Item",qty:1.0,origRate:2500.0,origAmt:2500.0,revRate:2500.0,revAmt:2500.0,saving:0.0},
+  {bill:"EW-2",isHeading:true,desc:"Testing"},
+  {bill:"EW-2",itemNo:"9",desc:"Testing of the whole system",unit:"Item",qty:1.0,origRate:3500.0,origAmt:3500.0,revRate:3500.0,revAmt:3500.0,saving:0.0},
+];
+
+const billComparison = {
+  "01":{title:"Preliminaries & General",origTotal:604500.0,revTotal:545000.0},
+  "1":{title:"Alterations",origTotal:173742.5,revTotal:122540.21},
+  "2":{title:"Earthworks",origTotal:36922.0,revTotal:34522.0},
+  "3":{title:"Concrete, Formwork & Reinforcement",origTotal:345110.64,revTotal:326432.59},
+  "4":{title:"Masonry",origTotal:380507.8,revTotal:366899.8},
+  "5":{title:"Waterproofing",origTotal:7400.0,revTotal:3298.14},
+  "6":{title:"Carpentry & Joinery",origTotal:39365.8,revTotal:37670.0},
+  "7":{title:"Ceilings & Partitions",origTotal:215422.9,revTotal:192991.2},
+  "8":{title:"Floor Coverings",origTotal:98000.0,revTotal:98000.0},
+  "9":{title:"Plastering",origTotal:293031.0,revTotal:284211.0},
+  "10":{title:"Tiling",origTotal:40880.0,revTotal:38325.0},
+  "11":{title:"Plumbing & Drainage",origTotal:51450.0,revTotal:35950.0},
+  "12":{title:"Paintwork",origTotal:187429.1,revTotal:177599.1},
+  "13":{title:"Subcontract Packages",origTotal:1352182.06,revTotal:1303042.06},
+  "14":{title:"Provisional Sums",origTotal:175000.0,revTotal:170000.0},
+  "EW-1":{title:"Walkways, Paving & Kerbing",origTotal:9620.0,revTotal:9620.0},
+  "EW-2":{title:"Stormwater Drainage",origTotal:33013.44,revTotal:33013.44},
+};
+
+const origTotalExVat=4043577.24,revTotalExVat=3779114.54;
+const origMarkup=303268.29,revMarkup=283433.59;
+const origInclMarkup=4346845.53,revInclMarkup=4062548.13;
+const origVat=652026.83,revVat=609382.22;
+const origInclVat=4998872.36,revInclVat=4671930.35;
+const totalSavingExVat=264462.7,totalSavingInclVat=326942.01;
+const pctSavingExVat="6.5%";
+
+// Bill comparison totals for revised rendering
+const revBillTotals={};
+boqComparison.forEach(d=>{if(!d.isHeading&&d.revAmt!=null){if(!revBillTotals[d.bill])revBillTotals[d.bill]=0;revBillTotals[d.bill]+=d.revAmt;}});
+const origBillTotals={};
+boqComparison.forEach(d=>{if(!d.isHeading&&d.origAmt!=null){if(!origBillTotals[d.bill])origBillTotals[d.bill]=0;origBillTotals[d.bill]+=d.origAmt;}});
+
+function renderBOQ(){
+  const filter=document.getElementById('billFilter').value;
+  const search=document.getElementById('boqSearch').value.toLowerCase().trim();
+  const body=document.getElementById('boqBody');
+  body.innerHTML='';
+  const billOrder=[];const seen=new Set();
+  boqComparison.forEach(d=>{if(!seen.has(d.bill)){seen.add(d.bill);billOrder.push(d.bill)}});
+  let itemCount=0;let grandTotal=0;
+  billOrder.forEach(billId=>{
+    if(filter!=='all'){
+      if(filter==='EW'){if(billId!=='EW-1'&&billId!=='EW-2')return;}
+      else{if(billId!==filter)return;}
+    }
+    const billItems=boqComparison.filter(d=>d.bill===billId);
+    const filteredItems=search?billItems.filter(d=>!d.isHeading&&d.desc.toLowerCase().includes(search)):billItems;
+    if(search&&filteredItems.length===0)return;
+    const bName=billNames[billId]||billId;
+    const bTotal=revBillTotals[billId]||0;
+    const isCollapsed=collapsedBills.has(billId);
+    const hdr=document.createElement('tr');hdr.className='bill-header'+(isCollapsed?' collapsed':'');
+    hdr.dataset.bill=billId;
+    const displayBill=billId.startsWith('EW')?'EW':billId;
+    hdr.innerHTML='<td colspan="5"><span class="toggle">\u25BC</span> Bill '+(displayBill==='EW'?billId.replace('EW-','EW.'):displayBill)+' \u2014 '+bName+'</td><td class="r" style="color:var(--muted);font-size:0.68rem">'+pct(bTotal,revTotalExVat)+'</td><td class="r">'+R(bTotal)+'</td>';
+    hdr.onclick=function(){if(collapsedBills.has(billId)){collapsedBills.delete(billId)}else{collapsedBills.add(billId)}renderBOQ()};
+    body.appendChild(hdr);
+    if(!isCollapsed){
+      const items=search?filteredItems:billItems;
+      items.forEach(d=>{
+        const tr=document.createElement('tr');
+        if(d.isHeading){
+          tr.className='boq-heading';
+          tr.innerHTML='<td></td><td></td><td colspan="5">'+d.desc+'</td>';
+        }else{
+          tr.className='boq-item'+(d.revAmt===0?' boq-zero':'');
+          const qStr=d.qty!=null?d.qty.toLocaleString('en-ZA',{maximumFractionDigits:2}):'';
+          const rStr=d.revRate!=null?Rf(d.revRate):'';
+          const aStr=d.revAmt!=null&&d.revAmt!==0?Rf(d.revAmt):'\u2014';
+          tr.innerHTML='<td style="color:var(--muted)">'+(displayBill==='EW'?billId.replace('EW-','EW.'):displayBill)+'</td><td style="font-weight:600;color:var(--indigo)">'+d.itemNo+'</td><td>'+d.desc+'</td><td class="r" style="color:var(--muted)">'+d.unit+'</td><td class="r">'+qStr+'</td><td class="r">'+rStr+'</td><td class="r" style="font-weight:500">'+aStr+'</td>';
+          if(d.revAmt)itemCount++;
+        }
+        body.appendChild(tr);
+      });
+      const st=document.createElement('tr');st.className='bill-total';
+      st.innerHTML='<td></td><td></td><td style="text-align:right;padding-right:20px">Subtotal \u2014 '+bName+'</td><td></td><td></td><td></td><td class="r">'+Rf(bTotal)+'</td>';
+      body.appendChild(st);
+    }
+    grandTotal+=bTotal;
+  });
+  const gt=document.createElement('tr');gt.className='gt';
+  gt.innerHTML='<td></td><td></td><td>TOTAL BILLS ex VAT</td><td></td><td></td><td></td><td class="r">'+Rf(grandTotal)+'</td>';
+  body.appendChild(gt);
+  const mkRow=document.createElement('tr');mkRow.className='bill-total';
+  mkRow.innerHTML='<td></td><td></td><td style="padding-left:18px;font-weight:600">Markup @ 7.5%</td><td></td><td></td><td></td><td class="r">'+Rf(revMarkup)+'</td>';
+  body.appendChild(mkRow);
+  const imRow=document.createElement('tr');imRow.className='gt';imRow.style.background='var(--indigo-d)';
+  imRow.innerHTML='<td></td><td></td><td style="font-weight:700">SUBTOTAL incl. Markup</td><td></td><td></td><td></td><td class="r" style="font-weight:800">'+Rf(revInclMarkup)+'</td>';
+  body.appendChild(imRow);
+  const vatRow=document.createElement('tr');vatRow.className='bill-total';
+  vatRow.innerHTML='<td></td><td></td><td style="padding-left:18px;font-weight:600">VAT @ 15%</td><td></td><td></td><td></td><td class="r">'+Rf(revVat)+'</td>';
+  body.appendChild(vatRow);
+  const tivRow=document.createElement('tr');tivRow.className='gt';tivRow.style.background='var(--green-d)';
+  tivRow.innerHTML='<td></td><td></td><td style="font-weight:800">CONTRACT TOTAL incl. VAT</td><td></td><td></td><td></td><td class="r" style="font-weight:800;color:var(--gold)">'+Rf(revInclVat)+'</td>';
+  body.appendChild(tivRow);
+  const sepRow=document.createElement('tr');
+  sepRow.innerHTML='<td colspan="7" style="padding:8px 0;border-bottom:2px solid var(--indigo)"></td>';
+  body.appendChild(sepRow);
+  const blhRow=document.createElement('tr');blhRow.className='bill-header';blhRow.style.cursor='default';
+  blhRow.innerHTML='<td colspan="5" style="color:var(--orange);font-weight:700">BELOW-THE-LINE ADDITIONS</td><td></td><td></td>';
+  body.appendChild(blhRow);
+  let blTotal=0;
+  belowLineItems.forEach(item=>{
+    const tr=document.createElement('tr');tr.className='boq-item';
+    tr.innerHTML='<td style="color:var(--orange)">NEW</td><td></td><td>'+item.desc+'</td><td class="r" style="color:var(--muted)">Item</td><td class="r">1</td><td></td><td class="r" style="font-weight:500;white-space:nowrap">'+Rf(item.amt)+'</td>';
+    body.appendChild(tr);blTotal+=item.amt;
+  });
+  const blSub=document.createElement('tr');blSub.className='bill-total';
+  blSub.innerHTML='<td></td><td></td><td style="text-align:right;padding-right:20px;font-weight:700">Below-the-Line Subtotal ex VAT</td><td></td><td></td><td></td><td class="r" style="font-weight:700">'+Rf(blTotal)+'</td>';
+  body.appendChild(blSub);
+  const blMk=blTotal*0.075;
+  const blMkRow=document.createElement('tr');blMkRow.className='bill-total';
+  blMkRow.innerHTML='<td></td><td></td><td style="padding-left:18px">Markup @ 7.5%</td><td></td><td></td><td></td><td class="r">'+Rf(blMk)+'</td>';
+  body.appendChild(blMkRow);
+  const blVat=(blTotal+blMk)*0.15;
+  const blVatRow=document.createElement('tr');blVatRow.className='bill-total';
+  blVatRow.innerHTML='<td></td><td></td><td style="padding-left:18px">VAT @ 15%</td><td></td><td></td><td></td><td class="r">'+Rf(blVat)+'</td>';
+  body.appendChild(blVatRow);
+  const blInclVat=blTotal+blMk+blVat;
+  const blTotRow=document.createElement('tr');blTotRow.className='gt';blTotRow.style.background='var(--orange-d)';
+  blTotRow.innerHTML='<td></td><td></td><td style="font-weight:700;color:var(--orange)">Below-the-Line TOTAL incl. VAT</td><td></td><td></td><td></td><td class="r" style="font-weight:800;color:var(--orange)">'+Rf(blInclVat)+'</td>';
+  body.appendChild(blTotRow);
+  const trueExp=revInclVat+blInclVat;
+  const teSep=document.createElement('tr');
+  teSep.innerHTML='<td colspan="7" style="padding:6px 0;border-bottom:3px double var(--gold)"></td>';
+  body.appendChild(teSep);
+  const teRow=document.createElement('tr');teRow.className='gt';teRow.style.background='var(--gold-d)';
+  teRow.innerHTML='<td></td><td></td><td style="font-weight:900;font-size:0.82rem;color:var(--gold)">TRUE PROJECT EXPOSURE incl. VAT</td><td></td><td></td><td></td><td class="r" style="font-weight:900;font-size:0.86rem;color:var(--gold)">'+Rf(trueExp)+'</td>';
+  body.appendChild(teRow);
+  document.getElementById('filterCount').textContent=search?itemCount+' items matching "'+search+'"':itemCount+' priced items';
+  document.getElementById('boqItemCount').textContent=itemCount+' Items';
+}
+try{renderBOQ();}catch(e){console.error('renderBOQ error:',e);}
+
+function renderRevised(){
+  const filter=document.getElementById('revBillFilter').value;
+  const body=document.getElementById('revisedBody');
+  body.innerHTML='';
+  const billOrder=[];const seen2=new Set();
+  boqComparison.forEach(d=>{if(!seen2.has(d.bill)){seen2.add(d.bill);billOrder.push(d.bill)}});
+  let changedCount=0;let totalOrigAmt=0;let totalRevAmt=0;
+  billOrder.forEach(billId=>{
+    if(filter!=='all'){
+      if(filter==='EW'){if(billId!=='EW-1'&&billId!=='EW-2')return;}
+      else{if(billId!==filter)return;}
+    }
+    const bName=billComparison[billId]?billComparison[billId].title:billId;
+    const displayBill=billId.startsWith('EW')?billId.replace('EW-','EW.'):billId;
+    const bOrig=origBillTotals[billId]||0;
+    const bRev=revBillTotals[billId]||0;
+    const bSav=bOrig-bRev;
+    const hdr=document.createElement('tr');hdr.className='bill-header';
+    hdr.innerHTML='<td colspan="5" style="cursor:default"><span style="color:var(--indigo)">Bill '+displayBill+'</span> \u2014 '+bName+'</td><td></td><td class="r" style="white-space:nowrap">'+Rf(bOrig)+'</td><td></td><td class="r" style="white-space:nowrap;color:'+(bRev<bOrig?'var(--green)':'var(--text)')+';font-weight:700">'+Rf(bRev)+'</td><td class="r" style="white-space:nowrap;color:'+(bSav>0?'var(--green)':bSav<0?'var(--red)':'var(--muted)')+';font-weight:600">'+(bSav!==0?Rf(bSav):'\u2014')+'</td>';
+    body.appendChild(hdr);
+    const billItems=boqComparison.filter(d=>d.bill===billId);
+    billItems.forEach(d=>{
+      if(d.isHeading){
+        const tr=document.createElement('tr');tr.className='boq-heading';
+        tr.innerHTML='<td></td><td></td><td colspan="8">'+d.desc+'</td>';
+        body.appendChild(tr);return;
+      }
+      const hasChanged=d.saving!=null&&Math.abs(d.saving)>0.01;
+      if(hasChanged)changedCount++;
+      const tr=document.createElement('tr');
+      tr.className='boq-item'+(hasChanged?' rev-row changed':'')+(d.origAmt===0?' boq-zero':'');
+      const qStr=d.qty!=null?d.qty.toLocaleString('en-ZA',{maximumFractionDigits:2}):'';
+      const origRateStr=d.origRate!=null?Rf(d.origRate):'\u2014';
+      const origAmtStr=d.origAmt!=null&&d.origAmt!==0?Rf(d.origAmt):'\u2014';
+      const revRateStr=d.revRate!=null?Rf(d.revRate):'\u2014';
+      const revAmtStr=d.revAmt!=null&&d.revAmt!==0?Rf(d.revAmt):'\u2014';
+      const savStr=d.saving!=null&&Math.abs(d.saving)>0.01?Rf(d.saving):'\u2014';
+      const savColor=d.saving>0.01?'var(--green)':d.saving<-0.01?'var(--red)':'var(--muted)';
+      if(d.origAmt>0){
+        tr.innerHTML='<td style="color:var(--muted)">'+displayBill+'</td><td style="font-weight:600;color:var(--indigo)">'+d.itemNo+'</td><td>'+d.desc+'</td><td class="r" style="color:var(--muted)">'+d.unit+'</td><td class="r">'+qStr+'</td><td class="r" style="white-space:nowrap">'+origRateStr+'</td><td class="r" style="white-space:nowrap">'+origAmtStr+'</td><td class="r" style="white-space:nowrap;font-weight:'+(hasChanged?'700':'400')+';color:'+(hasChanged?'var(--green)':'var(--text2)')+'">'+revRateStr+'</td><td class="r" style="white-space:nowrap;font-weight:'+(hasChanged?'700':'400')+';color:'+(hasChanged?'var(--green)':'var(--text2)')+'">'+revAmtStr+'</td><td class="r" style="white-space:nowrap;color:'+savColor+';font-weight:'+(hasChanged?'600':'400')+'">'+savStr+'</td>';
+        totalOrigAmt+=d.origAmt||0;totalRevAmt+=d.revAmt||0;
+      }else{
+        tr.innerHTML='<td style="color:var(--muted)">'+displayBill+'</td><td style="font-weight:600;color:var(--indigo)">'+d.itemNo+'</td><td>'+d.desc+'</td><td class="r" style="color:var(--muted)">'+d.unit+'</td><td class="r">'+qStr+'</td><td class="r">\u2014</td><td class="r">\u2014</td><td class="r">\u2014</td><td class="r">\u2014</td><td class="r">\u2014</td>';
+      }
+      body.appendChild(tr);
+    });
+    const st=document.createElement('tr');st.className='bill-total';
+    st.innerHTML='<td></td><td></td><td style="text-align:right;padding-right:12px">Subtotal \u2014 '+bName+'</td><td></td><td></td><td></td><td class="r" style="white-space:nowrap">'+Rf(bOrig)+'</td><td></td><td class="r" style="white-space:nowrap;font-weight:700;color:'+(bRev<bOrig?'var(--green)':'')+'">'+Rf(bRev)+'</td><td class="r" style="white-space:nowrap;color:'+(bSav>0?'var(--green)':bSav<0?'var(--red)':'')+';font-weight:600">'+(bSav!==0?Rf(bSav):'\u2014')+'</td>';
+    body.appendChild(st);
+  });
+  const gt=document.createElement('tr');gt.className='gt';
+  const gSav=origTotalExVat-revTotalExVat;
+  gt.innerHTML='<td></td><td></td><td>TOTAL ex VAT</td><td></td><td></td><td></td><td class="r" style="white-space:nowrap">'+Rf(origTotalExVat)+'</td><td></td><td class="r" style="white-space:nowrap;color:var(--gold)">'+Rf(revTotalExVat)+'</td><td class="r" style="white-space:nowrap;color:var(--green)">'+Rf(gSav)+'</td>';
+  body.appendChild(gt);
+  document.getElementById('revisedPlaceholder').style.display='none';
+  document.getElementById('revChangedCount').textContent=changedCount+' items repriced';
+  document.getElementById('revisedTotalCard').textContent=R(revTotalExVat);
+  document.getElementById('totalSavingCard').textContent=R(totalSavingExVat);
+  document.getElementById('totalSavingCard').style.color='var(--green)';
+  document.getElementById('pctReductionCard').textContent=pctSavingExVat;
+  const sumBody=document.getElementById('revisedSummaryBody');
+  sumBody.innerHTML='';
+  const sumRows=[
+    ['Total ex VAT',origTotalExVat,revTotalExVat],
+    ['Markup @ 7.5%',origMarkup,revMarkup],
+    ['Total incl. Markup',origInclMarkup,revInclMarkup],
+    ['VAT @ 15%',origVat,revVat],
+    ['TOTAL incl. VAT',origInclVat,revInclVat]
+  ];
+  sumRows.forEach((sr,i)=>{
+    const tr=document.createElement('tr');
+    if(i===sumRows.length-1)tr.className='gt';
+    const sv=sr[1]-sr[2];const p=sr[1]>0?((sv/sr[1])*100).toFixed(1)+'%':'\u2014';
+    const c=sv>0?'var(--green)':sv<0?'var(--red)':'';
+    tr.innerHTML='<td style="padding-left:18px;font-weight:'+(i===sumRows.length-1?'800':'500')+'">'+sr[0]+'</td><td class="r" style="white-space:nowrap">'+Rf(sr[1])+'</td><td class="r" style="white-space:nowrap;font-weight:700;color:'+(i===sumRows.length-1?'var(--gold)':'var(--text)')+'">'+Rf(sr[2])+'</td><td class="r" style="white-space:nowrap;color:'+c+';font-weight:600">'+(sv!==0?Rf(sv):'\u2014')+'</td><td class="r" style="white-space:nowrap;color:'+c+'">'+(sv!==0?p:'\u2014')+'</td>';
+    sumBody.appendChild(tr);
+  });
+  updateRevisedCharts(revTotalExVat,revInclVat);
+}
+try{renderRevised();}catch(e){console.error('renderRevised error:',e);}
+
+// CHART DEFAULTS
+try{
+Chart.defaults.color='#a0a0b0';Chart.defaults.borderColor='rgba(255,255,255,0.05)';Chart.defaults.font.family='Inter, sans-serif';Chart.defaults.font.size=11;
+
+new Chart(document.getElementById('chartHighLevel'),{type:'doughnut',data:{labels:['Preliminaries',"Builder's Measured",'Subcontract Packages','Provisional Sums','External Works'],datasets:[{data:[604500,1869261.74,1352182.06,175000,42633.44],backgroundColor:['#6366f1','#06b6d4','#ef4444','#eab308','#a855f7'],borderWidth:0,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{padding:12,usePointStyle:true,pointStyleWidth:8,font:{size:10}}},tooltip:{callbacks:{label:ctx=>ctx.label+': '+R(ctx.raw)+' ('+pct(ctx.raw,totalExVat)+')'}}},cutout:'55%'}});
+
+new Chart(document.getElementById('chartTrades'),{type:'bar',data:{labels:bills.map(b=>'Bill '+b.id),datasets:[{data:bills.map(b=>b.amt),backgroundColor:bills.map(b=>b.color),borderRadius:4,barThickness:18}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>R(ctx.raw)+' ('+pct(ctx.raw,totalExVat)+')'}}},scales:{x:{ticks:{callback:v=>'R'+(v/1000).toFixed(0)+'k'},grid:{color:'rgba(255,255,255,0.03)'}},y:{grid:{display:false},ticks:{font:{size:9}}}}}});
+
+new Chart(document.getElementById('chartBillsBar'),{type:'bar',data:{labels:bills.map(b=>b.name),datasets:[{data:bills.map(b=>b.amt),backgroundColor:bills.map(b=>b.color+'cc'),borderColor:bills.map(b=>b.color),borderWidth:1,borderRadius:3,barThickness:16}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>R(ctx.raw)}}},scales:{x:{ticks:{callback:v=>'R'+(v/1000).toFixed(0)+'k'},grid:{color:'rgba(255,255,255,0.03)'}},y:{grid:{display:false},ticks:{font:{size:9}}}}}});
+new Chart(document.getElementById('chartBillsPie'),{type:'pie',data:{labels:bills.map(b=>'Bill '+b.id+' - '+b.name),datasets:[{data:bills.map(b=>b.amt),backgroundColor:bills.map(b=>b.color),borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{padding:6,usePointStyle:true,pointStyleWidth:6,font:{size:8}}},tooltip:{callbacks:{label:ctx=>R(ctx.raw)+' ('+pct(ctx.raw,totalExVat)+')'}}}}});
+
+const subData=[{n:'Electrical',a:287405,c:'#6366f1'},{n:'3-Phase',a:46400,c:'#818cf8'},{n:'Deck/Stair',a:103655,c:'#06b6d4'},{n:'Aluminium',a:302124,c:'#22c55e'},{n:'Roof',a:477691,c:'#ef4444'},{n:'Palisade',a:38511,c:'#eab308'},{n:'Balustrades',a:17557,c:'#f97316'},{n:'RWG',a:29700,c:'#a855f7'}];
+new Chart(document.getElementById('chartSubPie'),{type:'doughnut',data:{labels:subData.map(s=>s.n),datasets:[{data:subData.map(s=>s.a),backgroundColor:subData.map(s=>s.c),borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'45%',plugins:{legend:{position:'right',labels:{padding:8,usePointStyle:true,pointStyleWidth:6,font:{size:9}}},tooltip:{callbacks:{label:ctx=>ctx.label+': '+R(ctx.raw)}}}}});
+new Chart(document.getElementById('chartSubVsBuilder'),{type:'doughnut',data:{labels:["Builder's Measured (1-12)",'Subcontract (13)','Provisional Sums (14)','External Works','Preliminaries'],datasets:[{data:[1869261.74,1352182.06,175000,42633.44,604500],backgroundColor:['#06b6d4','#ef4444','#eab308','#a855f7','#6366f1'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'50%',plugins:{legend:{position:'right',labels:{padding:8,usePointStyle:true,pointStyleWidth:6,font:{size:9}}},tooltip:{callbacks:{label:ctx=>ctx.label+': '+R(ctx.raw)+' ('+pct(ctx.raw,totalExVat)+')'}}}}});
+
+}catch(e){console.error('Charts error:',e);}
+
+var revisedBarChart,revisedWfChart;
+try{
+revisedBarChart=new Chart(document.getElementById('chartRevised'),{type:'bar',data:{labels:bills.map(b=>'Bill '+b.id),datasets:[{label:'Original',data:bills.map(b=>b.amt),backgroundColor:'rgba(99,102,241,0.5)',borderRadius:3,barThickness:10},{label:'Revised',data:bills.map(b=>b.amt),backgroundColor:'rgba(34,197,94,0.5)',borderRadius:3,barThickness:10}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{padding:12,usePointStyle:true,font:{size:10}}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+R(ctx.raw)}}},scales:{x:{grid:{display:false},ticks:{font:{size:9}}},y:{ticks:{callback:v=>'R'+(v/1000).toFixed(0)+'k'},grid:{color:'rgba(255,255,255,0.03)'}}}}});
+revisedWfChart=new Chart(document.getElementById('chartRevisedWaterfall'),{type:'bar',data:{labels:['Original','Saving','Revised','Markup','VAT','Total incl'],datasets:[{data:[inclVat,0,inclVat,0,0,inclVat],backgroundColor:['#6366f1','#22c55e','#06b6d4','#eab308','#f97316','#22c55e'],borderRadius:4,barThickness:36}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>R(ctx.raw)}}},scales:{y:{ticks:{callback:v=>'R'+(v/1000000).toFixed(1)+'M'},grid:{color:'rgba(255,255,255,0.03)'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+}catch(e){console.error('Revised charts error:',e);}
+
+function updateRevisedCharts(newExVat,newInclVat){
+  if(!revisedBarChart||!revisedWfChart)return;
+  const revBillAmts={};
+  boqComparison.forEach(d=>{
+    if(d.isHeading||d.revAmt==null||d.revAmt===0)return;
+    const bk=d.bill.startsWith('EW')?'EW':d.bill;
+    if(!revBillAmts[bk])revBillAmts[bk]=0;
+    revBillAmts[bk]+=d.revAmt;
+  });
+  const revisedAmts=bills.map(b=>revBillAmts[b.id]||b.amt);
+  revisedBarChart.data.datasets[1].data=revisedAmts;revisedBarChart.update();
+  const saving=inclVat-newInclVat;const nM=newExVat*0.075;const nV=(newExVat+nM)*0.15;
+  revisedWfChart.data.datasets[0].data=[inclVat,saving,newInclVat,nM,nV,newInclVat];
+  revisedWfChart.data.datasets[0].backgroundColor=['#6366f1','#22c55e','#06b6d4','#eab308','#f97316',newInclVat<inclVat?'#22c55e':'#ef4444'];
+  revisedWfChart.update();
+}
+
+// PROCUREMENT PACKS — PS-01 (Timber Screen) removed
+const packages=[
+{id:"SP-01",name:"Timber Deck & Staircase",billRef:"Bill 13, Item 2",amount:103655,supplier:"Big Decks",status:"Quoted",
+  scope:["Supply and install open timber deck/arrival area (32 m\u00B2)","Supply and install timber staircase (13 risers, 14 treads)","H.W. decking on H.W. substructure, H3 treated","Includes fire pit supply"],
+  excludes:["Retaining wall construction","Balustrades (check if needed)"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_03_ROOF STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS"],
+  zipFile:"Tender Packs/ME-408_SP-01_Timber_Deck_Staircase.zip",fileCount:6},
+{id:"SP-02",name:"Roof Structure \u2014 Supply & Install",billRef:"Bill 13, Item 4",amount:477690.6,supplier:"Seacon Roofing",status:"Quoted",
+  scope:["Design, supply and install complete roof structure","Sheeting, accessories, underlays, sisalation","Barges, fascias and the like","GMS purlins/trusses on laminated rafters (443 m\u00B2)"],
+  excludes:["Rainwater goods"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_03_ROOF STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS"],
+  zipFile:"Tender Packs/ME-408_SP-02_Roof_Structure.zip",fileCount:6},
+{id:"SP-03",name:"Aluminium Windows & Doors",billRef:"Bill 13, Item 3",amount:302123.93,supplier:"GT Aluminium",status:"Quoted",
+  scope:["Supply and install all aluminium windows and doors","Powder coated aluminium finish (black)","Safety glass where indicated","All ironmongery and hardware"],
+  excludes:["Nil"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_03_ROOF STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS","N2407_07_W+D 02"],
+  zipFile:"Tender Packs/ME-408_SP-03_Aluminium_Windows_Doors.zip",fileCount:7},
+{id:"SP-05",name:"Metal Palisade / Gate",billRef:"Bill 13, Item 5",amount:38510.6,supplier:"RSW Engineering",status:"Quoted",
+  scope:["Supply and install GMS palisade/fence and gate","Powder coated/painted to specified colours","Approx. 17 m\u00B2 reference area"],
+  excludes:["Nil"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_03_ROOF STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS","N2407_06_W+D01","N2407_07_W+D 02"],
+  zipFile:"Tender Packs/ME-408_SP-05_Metal_Palisade_Gate.zip",fileCount:8},
+{id:"SP-06",name:"Metal Balustrades",billRef:"Bill 13, Item 6",amount:17556.93,supplier:"RSW Engineering",status:"Quoted",
+  scope:["Supply and install GMS handrails to open deck area","GMS powder coated black","2 LM at top of external stairs"],
+  excludes:["Nil"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_03_ROOF STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS","N2407_06_W+D01","N2407_07_W+D 02"],
+  zipFile:"Tender Packs/ME-408_SP-06_Metal_Balustrades.zip",fileCount:8},
+{id:"SP-07",name:"Rainwater Goods",billRef:"Bill 13, Item 7",amount:29700,supplier:"Gutter Brigade",status:"Quoted",
+  scope:["125mm seamless aluminium gutters (78 LM)","100mm aluminium downpipes (80 LM)","Connect to existing stormwater"],
+  excludes:["Nil"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_03_ROOF STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS"],
+  zipFile:"Tender Packs/ME-408_SP-07_Rainwater_Goods.zip",fileCount:6},
+{id:"SP-08",name:"Carpets",billRef:"Bill 8, Floor Coverings",amount:98000,supplier:"To be priced",status:"For Pricing",
+  scope:["Supply and install carpet to auditorium and office areas","As per architectural floor finish schedule","Including underlay where specified"],
+  excludes:["Specialist screed (separate package)"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_03_ROOF STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS"],
+  zipFile:"Tender Packs/ME-408_SP-08_Carpets.zip",fileCount:6},
+{id:"SP-09",name:"Specialist Floor Screeds",billRef:"Bill 8/9, Floors",amount:null,supplier:"To be priced",status:"For Pricing",
+  scope:["Specialist screed and floor finish as per specification","Self-levelling and specialist screeds to floor areas"],
+  excludes:["Carpet (separate package)","Tiling"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_03_ROOF STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS"],
+  zipFile:"Tender Packs/ME-408_SP-09_Floor_Screeds.zip",fileCount:6},
+{id:"SP-11",name:"Electrical Installation",billRef:"Bill 13, Items 1a+1b",amount:333805,supplier:"CW Electrical",status:"Quoted",
+  scope:["Complete electrical installation","Distribution board, lighting, power points","Stage electrical requirements","Sound/AV conduit routing","Three phase upgrade (optional \u2014 R 46,400)"],
+  excludes:["Sound and media equipment"],
+  drawings:["N2407_01_LOWER GRND STOREY","N2407_02_UPPER GRND STOREY","N2407_04_SECT+ELEVS","N2407_05_ELEVS"],
+  zipFile:"Tender Packs/ME-408_SP-11_Electrical.zip",fileCount:5},
+{id:"SP-12",name:"Stage Construction",billRef:"Bill 14, Prov Sum",amount:40000,supplier:"To be priced",status:"Provisional",
+  scope:["Supply and install stage to auditorium","As per architectural detail and specification"],
+  excludes:["Sound and media equipment","Electrical (separate package)"],
+  drawings:["N2407_02_UPPER GRND STOREY","N2407_04_SECT+ELEVS"],
+  zipFile:"Tender Packs/ME-408_SP-12_Stage.zip",fileCount:3},
+{id:"SP-13",name:"Sound & Media Joinery Desk",billRef:"Bill 14, Prov Sum",amount:35000,supplier:"To be priced",status:"Provisional",
+  scope:["Supply and install sound/media joinery desk","Custom joinery to accommodate AV equipment"],
+  excludes:["Sound equipment","Electrical connections"],
+  drawings:["N2407_02_UPPER GRND STOREY"],
+  zipFile:"Tender Packs/ME-408_SP-13_Media_Joinery.zip",fileCount:2}
+];
+
+function fmt(n){if(n==null)return'\u2014';return'R '+n.toLocaleString('en-ZA',{minimumFractionDigits:0,maximumFractionDigits:0})}
+
+function buildPkgCards(){
+  const c=document.getElementById('pkgCards');let h='';
+  packages.forEach(pkg=>{
+    const sc=pkg.status==='Quoted'?'b-green':pkg.status==='For Pricing'?'b-gold':pkg.status==='Provisional'?'b-purple':'b-orange';
+    h+='<div class="pkg-card"><div class="pkg-top"><div><div style="display:flex;align-items:center;gap:8px"><span class="badge b-purple">'+pkg.id+'</span><h3>'+pkg.name+'</h3></div><div class="pkg-meta"><span>'+pkg.billRef+'</span><span style="color:var(--border-b)">\u00B7</span><span>'+pkg.supplier+'</span><span style="color:var(--border-b)">\u00B7</span><span class="badge '+sc+'">'+pkg.status+'</span></div></div><div class="pkg-amount">'+(pkg.amount?fmt(pkg.amount):'To Be Priced')+'</div></div>';
+    h+='<div class="pkg-body"><div><div class="pkg-section-label">Scope of Work</div><ul class="scope-list">'+pkg.scope.map(s=>'<li>'+s+'</li>').join('')+'</ul></div><div><div class="pkg-section-label">Exclusions</div><ul class="scope-list">'+pkg.excludes.map(s=>'<li>'+s+'</li>').join('')+'</ul><div class="pkg-section-label" style="margin-top:12px">Contents ('+pkg.fileCount+' files)</div><div class="drawing-pills">'+pkg.drawings.map(d=>'<span class="drawing-pill"><span class="pill-icon">&#128196;</span>'+d.split('_').pop().split(' - ').pop()+'</span>').join('')+'</div></div></div>';
+    h+='<div class="pkg-footer"><a href="'+pkg.zipFile+'" download class="btn btn-download btn-sm" style="text-decoration:none"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Tender Pack (.zip)</a><button class="btn btn-outline btn-sm" onclick="showTab(\'uploads\',document.querySelectorAll(\'.tab\')[5])">Upload Pricing</button></div></div>';
+  });
+  c.innerHTML=h;
+}
+
+// UPLOAD HANDLING
+const uz=document.getElementById('uploadZone');const fi=document.getElementById('fileInput');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.style.borderColor='var(--indigo)';uz.style.background='var(--indigo-d)'});
+uz.addEventListener('dragleave',()=>{uz.style.borderColor='';uz.style.background=''});
+uz.addEventListener('drop',e=>{e.preventDefault();uz.style.borderColor='';uz.style.background='';handleFiles(e.dataTransfer.files)});
+fi.addEventListener('change',()=>handleFiles(fi.files));
+function handleFiles(files){
+  const pkg=document.getElementById('uploadPkg').value;const log=document.getElementById('uploadLog');
+  if(log.querySelector('td[colspan]'))log.innerHTML='';
+  Array.from(files).forEach(f=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>'+new Date().toLocaleDateString('en-ZA')+'</td><td>'+pkg+'</td><td style="color:var(--text)">'+f.name+'</td><td><span class="badge b-green">Uploaded</span></td>';
+    log.appendChild(tr);
+  });
+  const uf=document.getElementById('uploadedFiles');
+  uf.innerHTML='<div style="padding:12px;background:var(--green-d);border-radius:var(--rs);font-size:0.74rem;color:var(--green)">&#10003; '+files.length+' file(s) added to log for '+pkg+'</div>';
+  setTimeout(()=>uf.innerHTML='',4000);
+}
+
+// DRAWING UPLOAD HANDLING
+const duz=document.getElementById('drawingUploadZone');const dfi=document.getElementById('drawingFileInput');
+duz.addEventListener('dragover',e=>{e.preventDefault();duz.style.borderColor='var(--indigo)';duz.style.background='var(--indigo-d)'});
+duz.addEventListener('dragleave',()=>{duz.style.borderColor='';duz.style.background=''});
+duz.addEventListener('drop',e=>{e.preventDefault();duz.style.borderColor='';duz.style.background='';handleDrawingFiles(e.dataTransfer.files)});
+dfi.addEventListener('change',()=>handleDrawingFiles(dfi.files));
+function handleDrawingFiles(files){
+  const dtype=document.getElementById('drawingType').value;
+  const uf=document.getElementById('drawingUploadedFiles');
+  uf.innerHTML='<div style="padding:12px;background:var(--green-d);border-radius:var(--rs);font-size:0.74rem;color:var(--green)">&#10003; '+files.length+' drawing file(s) uploaded for '+dtype+'</div>';
+  setTimeout(()=>uf.innerHTML='',4000);
+}
+
+// INIT
+try{buildPkgCards();}catch(e){console.error('buildPkgCards error:',e);}
+</script>
+</body>
+</html>
