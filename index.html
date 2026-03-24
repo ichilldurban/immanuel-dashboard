@@ -149,6 +149,7 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
   <div class="tab" onclick="showTab('packages',this)">Procurement Packs <span class="cnt">11</span></div>
   <div class="tab" onclick="showTab('uploads',this)">Upload Pricing</div>
   <div class="tab" onclick="showTab('drawings',this)">Drawings</div>
+  <div class="tab" onclick="showTab('submission',this)">Original Submission</div>
 </div>
 
 <div class="content">
@@ -336,22 +337,22 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
     <div class="m gold"><div class="m-label">Largest Package</div><div class="m-value" style="color:var(--gold)">R 477,691</div><div class="m-sub">SP-02 Roof Structure</div></div>
   </div>
 
-  <!-- Section A: Confirmed Subcontractors -->
+  <!-- Section A: Current Subcontractor Pricing -->
   <div class="card">
-    <div class="card-h"><h2>Section A: Confirmed Subcontractors (with quotes)</h2></div>
+    <div class="card-h"><h2>Section A: Current Subcontractor Pricing</h2><span class="badge b-gold">Prices under review — not yet confirmed</span></div>
     <div class="card-b" style="padding:0"><table>
-      <thead><tr><th>Package</th><th>Description</th><th>Supplier</th><th class="r">Amount (ex VAT)</th><th>Status</th></tr></thead>
+      <thead><tr><th>Package</th><th>Description</th><th>Supplier</th><th class="r">Amount (ex VAT)</th><th>Status</th><th style="width:200px;text-align:center">Quote</th></tr></thead>
       <tbody>
-        <tr><td>SP-01</td><td>Timber Deck &amp; Staircase</td><td>Big Decks</td><td class="r">R 103,655</td><td><span class="badge b-green">Quoted</span></td></tr>
-        <tr><td>SP-02</td><td>Roof Structure — Supply &amp; Install</td><td>Seacon Roofing</td><td class="r">R 477,691</td><td><span class="badge b-green">Quoted</span></td></tr>
-        <tr><td>SP-03</td><td>Aluminium Windows &amp; Doors</td><td>GT Aluminium</td><td class="r">R 302,124</td><td><span class="badge b-green">Quoted</span></td></tr>
-        <tr><td>SP-05</td><td>Metal Palisade / Gate</td><td>RSW Engineering</td><td class="r">R 38,511</td><td><span class="badge b-green">Quoted</span></td></tr>
-        <tr><td>SP-06</td><td>Balustrades</td><td>RSW Engineering</td><td class="r">R 17,557</td><td><span class="badge b-green">Quoted</span></td></tr>
-        <tr><td>SP-07</td><td>Rainwater Goods</td><td>Gutter Brigade</td><td class="r">R 29,700</td><td><span class="badge b-green">Quoted</span></td></tr>
-        <tr><td>SP-11</td><td>Electrical Installation</td><td>CW Electrical</td><td class="r">R 287,405</td><td><span class="badge b-green">Quoted</span></td></tr>
-        <tr><td>SP-11b</td><td>Three Phase Upgrade (Optional)</td><td>CW Electrical</td><td class="r">R 46,400</td><td><span class="badge b-indigo">Optional</span></td></tr>
-        <tr><td>SP-08</td><td>Carpet (Floor Coverings)</td><td>Church to procure</td><td class="r">R 98,000</td><td><span class="badge b-cyan">Procurement Pack Ready</span></td></tr>
-        <tr><td>SP-09</td><td>Decorative/Self-levelling Screed</td><td>Subcontractor</td><td class="r">R 50,460</td><td><span class="badge b-gold">For Pricing</span></td></tr>
+        <tr><td>SP-01</td><td>Timber Deck &amp; Staircase</td><td>Big Decks</td><td class="r">R 103,655</td><td><span class="badge b-green">Quoted</span></td><td style="text-align:center"><a href="quotes/SP-01_Big_Decks.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;margin-right:4px">View</a><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-01')">Upload New</label></td></tr>
+        <tr><td>SP-02</td><td>Roof Structure — Supply &amp; Install</td><td>Seacon Roofing</td><td class="r">R 477,691</td><td><span class="badge b-green">Quoted</span></td><td style="text-align:center"><a href="quotes/SP-02_Seacon_Roofing.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;margin-right:4px">View</a><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-02')">Upload New</label></td></tr>
+        <tr><td>SP-03</td><td>Aluminium Windows &amp; Doors</td><td>GT Aluminium</td><td class="r">R 302,124</td><td><span class="badge b-green">Quoted</span></td><td style="text-align:center"><a href="quotes/SP-03_GT_Aluminium.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;margin-right:4px">View</a><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-03')">Upload New</label></td></tr>
+        <tr><td>SP-05</td><td>Metal Palisade / Gate</td><td>RSW Engineering</td><td class="r">R 38,511</td><td><span class="badge b-green">Quoted</span></td><td style="text-align:center"><span class="btn btn-outline btn-sm" style="opacity:0.4;cursor:default">No Quote</span><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-05')">Upload New</label></td></tr>
+        <tr><td>SP-06</td><td>Balustrades</td><td>RSW Engineering</td><td class="r">R 17,557</td><td><span class="badge b-green">Quoted</span></td><td style="text-align:center"><span class="btn btn-outline btn-sm" style="opacity:0.4;cursor:default">No Quote</span><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-06')">Upload New</label></td></tr>
+        <tr><td>SP-07</td><td>Rainwater Goods</td><td>Gutter Brigade</td><td class="r">R 29,700</td><td><span class="badge b-green">Quoted</span></td><td style="text-align:center"><a href="quotes/SP-07_Gutter_Brigade.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;margin-right:4px">View</a><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-07')">Upload New</label></td></tr>
+        <tr><td>SP-11</td><td>Electrical Installation</td><td>CW Electrical</td><td class="r">R 287,405</td><td><span class="badge b-green">Quoted</span></td><td style="text-align:center"><a href="quotes/SP-11_CW_Electrical.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;margin-right:4px">View</a><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-11')">Upload New</label></td></tr>
+        <tr><td>SP-11b</td><td>Three Phase Upgrade (Optional)</td><td>CW Electrical</td><td class="r">R 46,400</td><td><span class="badge b-indigo">Optional</span></td><td style="text-align:center"><span class="btn btn-outline btn-sm" style="opacity:0.4;cursor:default">Incl. above</span></td></tr>
+        <tr><td>SP-08</td><td>Carpet (Floor Coverings)</td><td>Church to procure</td><td class="r">R 98,000</td><td><span class="badge b-cyan">Procurement Pack Ready</span></td><td style="text-align:center"><span class="btn btn-outline btn-sm" style="opacity:0.4;cursor:default">No Quote</span><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-08')">Upload New</label></td></tr>
+        <tr><td>SP-09</td><td>Decorative/Self-levelling Screed</td><td>Subcontractor</td><td class="r">R 50,460</td><td><span class="badge b-gold">For Pricing</span></td><td style="text-align:center"><a href="quotes/SP-09_Floor_Screeds.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;margin-right:4px">View</a><label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0"><input type="file" accept=".pdf,.xlsx,.docx" style="display:none" onchange="handleQuoteUpload(this,'SP-09')">Upload New</label></td></tr>
       </tbody>
     </table></div>
   </div>
@@ -430,15 +431,15 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
   <div class="card">
     <div class="card-h"><h2>Architectural Drawings</h2><span class="badge b-indigo">Narrative Architects — N2407</span></div>
     <div class="card-b" style="padding:0"><table>
-      <thead><tr><th style="width:40px">#</th><th style="width:140px">Drawing</th><th>Description</th><th class="r" style="width:100px">Date</th></tr></thead>
+      <thead><tr><th style="width:40px">#</th><th style="width:140px">Drawing</th><th>Description</th><th class="r" style="width:100px">Date</th><th style="width:100px;text-align:center">Download</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td style="font-weight:600;color:var(--indigo)">N2407_01</td><td>Lower Ground Storey</td><td class="r">Dec 2025</td></tr>
-        <tr><td>2</td><td style="font-weight:600;color:var(--indigo)">N2407_02</td><td>Upper Ground Storey</td><td class="r">Dec 2025</td></tr>
-        <tr><td>3</td><td style="font-weight:600;color:var(--indigo)">N2407_03</td><td>Roof Storey</td><td class="r">Dec 2025</td></tr>
-        <tr><td>4</td><td style="font-weight:600;color:var(--indigo)">N2407_04</td><td>Sections + Elevations</td><td class="r">Dec 2025</td></tr>
-        <tr><td>5</td><td style="font-weight:600;color:var(--indigo)">N2407_05</td><td>Elevations</td><td class="r">Dec 2025</td></tr>
-        <tr><td>6</td><td style="font-weight:600;color:var(--indigo)">N2407_06</td><td>Window &amp; Door Schedule 01</td><td class="r">Dec 2025</td></tr>
-        <tr><td>7</td><td style="font-weight:600;color:var(--indigo)">N2407_07</td><td>Window &amp; Door Schedule 02</td><td class="r">Dec 2025</td></tr>
+        <tr><td>1</td><td style="font-weight:600;color:var(--indigo)">N2407_01</td><td>Lower Ground Storey</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/architect/N2407_IMMANUAL%20SEATIDES_01_LOWER%20GRND%20STOREY.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>2</td><td style="font-weight:600;color:var(--indigo)">N2407_02</td><td>Upper Ground Storey</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/architect/N2407_IMMANUAL%20SEATIDES_02_UPPER%20GRND%20STOREY.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>3</td><td style="font-weight:600;color:var(--indigo)">N2407_03</td><td>Roof Storey</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/architect/N2407_IMMANUAL%20SEATIDES_03_ROOF%20STOREY.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>4</td><td style="font-weight:600;color:var(--indigo)">N2407_04</td><td>Sections + Elevations</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/architect/N2407_IMMANUAL%20SEATIDES_04_SECT%2BELEVS.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>5</td><td style="font-weight:600;color:var(--indigo)">N2407_05</td><td>Elevations</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/architect/N2407_IMMANUAL%20SEATIDES_05_ELEVS.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>6</td><td style="font-weight:600;color:var(--indigo)">N2407_06</td><td>Window &amp; Door Schedule 01</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/architect/N2407_IMMANUAL%20SEATIDES_06_W%2BD01.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>7</td><td style="font-weight:600;color:var(--indigo)">N2407_07</td><td>Window &amp; Door Schedule 02</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/architect/N2407_IMMANUAL%20SEATIDES_07_W%2BD%2002.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
       </tbody>
     </table></div>
   </div>
@@ -446,13 +447,14 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
   <div class="card">
     <div class="card-h"><h2>Structural / Engineer Drawings</h2><span class="badge b-purple">Sutherland — 9721</span></div>
     <div class="card-b" style="padding:0"><table>
-      <thead><tr><th style="width:40px">#</th><th style="width:140px">Drawing</th><th>Description</th><th class="r" style="width:100px">Date</th></tr></thead>
+      <thead><tr><th style="width:40px">#</th><th style="width:140px">Drawing</th><th>Description</th><th class="r" style="width:100px">Date</th><th style="width:100px;text-align:center">Download</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td style="font-weight:600;color:var(--purple)">9721_S_DW001</td><td>Foundation Layout and Details</td><td class="r">Dec 2025</td></tr>
-        <tr><td>2</td><td style="font-weight:600;color:var(--purple)">9721_S_DW002</td><td>Surface Bed Layout</td><td class="r">Dec 2025</td></tr>
-        <tr><td>3</td><td style="font-weight:600;color:var(--purple)">9721_S_DW003</td><td>First Floor and Roof Layout</td><td class="r">Dec 2025</td></tr>
-        <tr><td>4</td><td style="font-weight:600;color:var(--purple)">9721_S_DW004</td><td>Building Sections</td><td class="r">Dec 2025</td></tr>
-        <tr><td>5</td><td style="font-weight:600;color:var(--purple)">9721_S_DW005</td><td>Typical Brickwork Details</td><td class="r">Dec 2025</td></tr>
+        <tr><td>1</td><td style="font-weight:600;color:var(--purple)">9721_S_DW001</td><td>Foundation Layout and Details</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/structural/9721_S_DW001%20-%20Foundation%20Layout%20and%20Details.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>2</td><td style="font-weight:600;color:var(--purple)">9721_S_DW002</td><td>Surface Bed Layout</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/structural/9721_S_DW002%20-%20Surface%20Bed%20Layout.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>3</td><td style="font-weight:600;color:var(--purple)">9721_S_DW003</td><td>First Floor and Roof Layout</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/structural/9721_S_DW003%20-%20First%20Floor%20and%20Roof%20Layout.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>4</td><td style="font-weight:600;color:var(--purple)">9721_S_DW004</td><td>Building Sections</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/structural/9721_S_DW004%20-%20Building%20Sections.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>5</td><td style="font-weight:600;color:var(--purple)">9721_S_DW005</td><td>Typical Brickwork Details</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/structural/9721_S_DW005%20-%20Typical%20Brickwork%20Details.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
+        <tr><td>6</td><td style="font-weight:600;color:var(--purple)">9721 Spec</td><td>Project Specification</td><td class="r">Dec 2025</td><td style="text-align:center"><a href="drawings/structural/9721%20-%20Project%20Specification.pdf" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none">View PDF</a></td></tr>
       </tbody>
     </table></div>
   </div>
@@ -478,6 +480,42 @@ footer{text-align:center;padding:20px;font-size:0.6rem;color:var(--muted);border
         <input type="file" id="drawingFileInput" style="display:none" multiple accept=".pdf">
       </div>
       <div id="drawingUploadedFiles" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TAB 8: ORIGINAL SUBMISSION ===================== -->
+<div class="panel" id="panel-submission">
+  <div class="card">
+    <div class="card-h"><h2>Original Tender Submission</h2><span class="badge b-gold">18 February 2026</span></div>
+    <div class="card-b">
+      <p style="font-size:0.78rem;color:var(--text2);margin-bottom:18px;line-height:1.6">The documents below were submitted to Immanuel Church as the formal tender by DF Strang Buildings, prepared by Metric Edge Cost &amp; Construction Consultants. Click to download and review.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px;opacity:0.5">&#128196;</div>
+          <div style="font-weight:600;font-size:0.82rem;margin-bottom:4px">Cover Letter &amp; Report</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:12px">ME-408 Immanuel Church Seatides — Project Overview, Scope &amp; Conditions</div>
+          <a href="submission/ME-408_Cover_Letter.docx" download class="btn btn-download btn-sm" style="text-decoration:none">Download (.docx)</a>
+        </div>
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px;opacity:0.5">&#128200;</div>
+          <div style="font-weight:600;font-size:0.82rem;margin-bottom:4px">Bill of Quantities (PDF)</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:12px">Complete priced BOQ as submitted — all 15 bills + External Works</div>
+          <a href="submission/ME-408_BOQ.pdf" target="_blank" class="btn btn-download btn-sm" style="text-decoration:none">View / Download (.pdf)</a>
+        </div>
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px;opacity:0.5">&#128200;</div>
+          <div style="font-weight:600;font-size:0.82rem;margin-bottom:4px">Bill of Quantities (Excel)</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:12px">Original BOQ spreadsheet — rates, quantities, amounts</div>
+          <a href="submission/ME-408_BOQ_Original.xlsx" download class="btn btn-download btn-sm" style="text-decoration:none">Download (.xlsx)</a>
+        </div>
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:var(--r);padding:20px;text-align:center">
+          <div style="font-size:2rem;margin-bottom:8px;opacity:0.5">&#127970;</div>
+          <div style="font-weight:600;font-size:0.82rem;margin-bottom:4px">DF Strang Builders Portfolio</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-bottom:12px">Company profile, past projects &amp; capabilities</div>
+          <a href="submission/DF_Strang_Portfolio.pdf" target="_blank" class="btn btn-download btn-sm" style="text-decoration:none">View / Download (.pdf)</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1244,6 +1282,23 @@ function handleDrawingFiles(files){
   const uf=document.getElementById('drawingUploadedFiles');
   uf.innerHTML='<div style="padding:12px;background:var(--green-d);border-radius:var(--rs);font-size:0.74rem;color:var(--green)">&#10003; '+files.length+' drawing file(s) uploaded for '+dtype+'</div>';
   setTimeout(()=>uf.innerHTML='',4000);
+}
+
+// QUOTE UPLOAD HANDLER
+function handleQuoteUpload(input, pkgId) {
+  if (!input.files || !input.files.length) return;
+  const file = input.files[0];
+  const row = input.closest('tr');
+  const cell = input.closest('td');
+  // Show confirmation
+  cell.innerHTML = '<span class="badge b-green" style="font-size:0.68rem">&#10003; ' + file.name + ' uploaded</span>';
+  // Add to upload log
+  const log = document.getElementById('uploadLog');
+  if (log && log.querySelector('td[colspan]')) log.innerHTML = '';
+  const tr = document.createElement('tr');
+  const now = new Date();
+  tr.innerHTML = '<td>' + now.toLocaleDateString('en-ZA') + '</td><td>' + pkgId + '</td><td>' + file.name + '</td><td><span class="badge b-green">Uploaded</span></td>';
+  if (log) log.appendChild(tr);
 }
 
 // INIT
