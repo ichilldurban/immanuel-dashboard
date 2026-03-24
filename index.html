@@ -46,7 +46,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
 
 /* ===== LOGIN ===== */
-#loginPage { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); padding: 20px; }
+#loginPage { display: none; justify-content: center; align-items: center; min-height: 100vh; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); padding: 20px; }
 .login-card { background: #fff; border-radius: 12px; padding: 48px 40px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); text-align: center; }
 .login-logos { display: flex; justify-content: center; align-items: center; gap: 24px; margin-bottom: 32px; }
 .login-logos img { height: 56px; object-fit: contain; }
@@ -62,7 +62,7 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 .login-error { color: var(--red); font-size: 0.78rem; margin-top: 12px; display: none; }
 
 /* ===== APP WRAPPER ===== */
-#appPage { display: none; }
+#appPage { display: block; }
 
 /* ===== HEADER ===== */
 .header { background: var(--header-bg); color: #fff; padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
@@ -73,7 +73,8 @@ body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); c
 .header-right { display: flex; align-items: center; gap: 16px; }
 .header-right img { height: 36px; }
 .header-user { font-size: 0.72rem; color: rgba(255,255,255,0.6); }
-.logout-btn { padding: 6px 14px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; font-size: 0.72rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all var(--t); }
+.logout-btn { padding: 6px 14px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; font-size: 0.72rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all var(--t); display: none; /* AUTH DISABLED TEMP */ }
+.header-right #userEmail { display: none; /* AUTH DISABLED TEMP */ }
 .logout-btn:hover { background: rgba(255,255,255,0.2); }
 
 /* ===== NAV BAR ===== */
